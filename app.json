@@ -1,6 +1,6 @@
 {
-  "versionCode": 7,
-  "versionName": "2.3.2",
-  "apkUrl": "https://raw.githubusercontent.com/strikefarron/zielklinik-daten/560a0851ba894ccbd2bd2976f625d8eeed804f33/apk/Zielklinik_Matrix_HD.apk",
-  "hinweis": "iPhone-Anleitung mit Web-Adresse."
+  "versionCode": 8,
+  "versionName": "2.3.3",
+  "apkUrl": "https://raw.githubusercontent.com/strikefarron/zielklinik-daten/2e131a421f47f4e30d4a30c19cfab796deff0309/apk/Zielklinik_Matrix_HD.apk",
+  "hinweis": "Schutz vor veralteten Sync-Dateien."
 }
