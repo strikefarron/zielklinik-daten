@@ -16,7 +16,9 @@ Dieses Repository versorgt die Zielklinik-Matrix-App (Android + HTML) mit dem ge
 
 ## Neue App-Version verteilen
 1. APK unter `apk/` ersetzen (muss mit dem Team-Schlüssel `zielklinik.jks` signiert sein).
-2. In `app.json` `versionCode`/`versionName` auf die Werte der neuen APK setzen.
+2. Committen, dann in `app.json` `versionCode`/`versionName` setzen und `apkUrl` auf den Commit der neuen APK zeigen lassen:
+   `https://raw.githubusercontent.com/strikefarron/zielklinik-daten/<COMMIT-SHA>/apk/Zielklinik_Matrix_HD.apk`
+   (der Commit-Link ist sofort aktuell und unveränderlich; der `main`-Link wird von GitHub bis zu 5 Min. gepuffert).
 3. Apps ab 2.3.0 zeigen dann „Jetzt aktualisieren“: Die App lädt die APK selbst, prüft Paketname, Version
    und Signatur und öffnet den Android-Installationsdialog. Fremd signierte APKs werden abgelehnt.
 
