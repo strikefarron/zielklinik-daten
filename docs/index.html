@@ -610,6 +610,7 @@
       <div class="option-box" style="margin-bottom:0; border-color:rgba(245,158,11,0.4);">
         <h3 style="color:#fde68a;">2. Für die Datenpflege: Sync-Datei erstellen</h3>
         <p>Verschlüsselt die aktuellen Klinikdaten dieses Geräts mit dem Passwort oben und speichert sie als <code>daten.enc.json</code>. Diese Datei dann im GitHub-Repository hochladen (vorhandene Datei ersetzen). Danach erhalten alle Apps den neuen Stand.</p>
+        <p style="font-size:0.78rem; color:#fde68a;">🔒 Geht nur mit Internet und nur, wenn dieses Gerät auf dem neuesten Team-Stand ist – so werden keine Änderungen anderer überschrieben. Am besten erstellt nur eine Person (Datenpflege) Sync-Dateien; Kollegen melden Änderungen an sie.</p>
         <div style="display:flex; flex-wrap:wrap; gap:8px;">
           <button type="button" class="action-btn" style="background:#d97706; border-color:#f59e0b; color:#fff;" onclick="createSyncFile()">🔐 Sync-Datei erstellen</button>
           <button type="button" class="action-btn" onclick="openExternal(SYNC_CONFIG.repoUrl)">↗ GitHub-Repository öffnen</button>
@@ -1406,7 +1407,7 @@
 };
     const ROUTE_INFO = {"stand":"23.10.2026","quelle":"OpenStreetMap / OSRM"};
     const SOSI_FACTOR = 0.8;
-    const SYNC_CONFIG = {"dataUrl":"https://raw.githubusercontent.com/strikefarron/zielklinik-daten/main/daten.enc.json","appUrl":"https://raw.githubusercontent.com/strikefarron/zielklinik-daten/main/app.json","repoUrl":"https://github.com/strikefarron/zielklinik-daten","webUrl":"https://strikefarron.github.io/zielklinik-daten/"};
+    const SYNC_CONFIG = {"dataUrl":"https://raw.githubusercontent.com/strikefarron/zielklinik-daten/main/daten.enc.json","appUrl":"https://raw.githubusercontent.com/strikefarron/zielklinik-daten/main/app.json","dataApiUrl":"https://api.github.com/repos/strikefarron/zielklinik-daten/contents/daten.enc.json?ref=main","repoUrl":"https://github.com/strikefarron/zielklinik-daten","webUrl":"https://strikefarron.github.io/zielklinik-daten/"};
 
     let HOSPITALS_DATA = [];
     let activeGbaFilter = "ALL";
@@ -1850,7 +1851,7 @@
       persistData();
       document.getElementById("customDataBadge").style.display = "none";
       const m = getSyncMeta();
-      m.version = payload.version; m.stand = payload.stand; m.lastOk = new Date().toISOString(); m.lastError = "";
+      m.version = payload.version; m.stand = payload.stand; m.lastOk = new Date().toISOString(); m.lastError = ""; delete m.undone;
       setSyncMeta(m);
       renderFilterPills();
       renderEstimatorDropdowns();
@@ -1875,7 +1876,7 @@
       if (manual) setSyncStatusText("⏳ Prüfe Team-Stand …", false);
       try {
         const file = await fetchJsonNoCache(SYNC_CONFIG.dataUrl);
-        const known = passwordOverride ? -1 : (meta.version || 0);
+        const known = (passwordOverride || (manual && meta.undone)) ? -1 : (meta.version || 0);
         if (typeof file.version !== "number") throw new Error("format");
         if (file.version <= known) {
           const m = getSyncMeta(); m.lastCheck = new Date().toISOString(); m.lastError = ""; setSyncMeta(m);
@@ -1918,6 +1919,7 @@
       HOSPITALS_DATA = prev;
       persistData();
       try { localStorage.removeItem(SYNC_UNDO_KEY); } catch (e) {}
+      const mu = getSyncMeta(); mu.undone = true; setSyncMeta(mu);
       renderFilterPills(); renderEstimatorDropdowns(); renderHospitalCards();
       renderSyncStatus();
       showToast("↩️ Vorheriger Stand wiederhergestellt");
@@ -1928,10 +1930,24 @@
       if (!pw || pw.length < 6) { showToast("🔑 Bitte oben das Team-Passwort eingeben."); return; }
       if (!syncCryptoAvailable()) { showToast("⚠️ " + syncErrorText(new Error("krypto"))); return; }
       if (!validClinicList(HOSPITALS_DATA)) { showToast("⚠️ Klinikdaten unvollständig – Abbruch."); return; }
-      if (!confirm("Sync-Datei mit den Daten DIESES Geräts erstellen? Nach dem Hochladen erhalten alle Apps genau diesen Stand.")) return;
-      let remoteVersion = 0;
-      try { const f = await fetchJsonNoCache(SYNC_CONFIG.dataUrl); if (typeof f.version === "number") remoteVersion = f.version; } catch (e) {}
-      const version = Math.max(remoteVersion, getSyncMeta().version || 0) + 1;
+      // Sperre: nur vom neuesten Team-Stand aus, damit keine Änderungen anderer überschrieben werden
+      showToast("⏳ Prüfe Team-Stand …");
+      const remote = await fetchCurrentTeamVersion();
+      if (remote === null) {
+        alert("Keine Verbindung zu GitHub.\n\nOhne Internet kann nicht geprüft werden, ob dein Gerät auf dem neuesten Team-Stand ist. Sync-Datei bitte mit Internet erstellen.");
+        return;
+      }
+      const meta0 = getSyncMeta();
+      if (meta0.undone) {
+        alert("Auf diesem Gerät wurde eine Team-Aktualisierung rückgängig gemacht.\n\nBitte zuerst „Jetzt aktualisieren“ (auf den Team-Stand), dann deine Änderungen eintragen und erneut eine Sync-Datei erstellen.");
+        return;
+      }
+      if (remote > (meta0.version || 0)) {
+        alert("Dein Gerät ist nicht auf dem neuesten Team-Stand (Gerät: Version " + (meta0.version || 0) + ", Team: Version " + remote + ").\n\nBitte zuerst „Jetzt aktualisieren“ und deine Änderungen danach erneut eintragen. So werden keine Änderungen anderer überschrieben.");
+        return;
+      }
+      if (!confirm("Sync-Datei mit den Daten DIESES Geräts erstellen (Version " + (remote + 1) + ")?\n\nNach dem Hochladen bei GitHub erhalten alle Apps genau diesen Stand.")) return;
+      const version = remote + 1;
       const now = new Date();
       const pad = function(n) { return (n < 10 ? "0" : "") + n; };
       const stand = pad(now.getDate()) + "." + pad(now.getMonth() + 1) + "." + now.getFullYear() + " " + pad(now.getHours()) + ":" + pad(now.getMinutes());
@@ -1944,6 +1960,25 @@
       renderSyncStatus(); updateSyncBadge();
       showToast("🔐 Sync-Datei Version " + version + " erstellt – jetzt bei GitHub hochladen");
     }
+    // Aktuelle Team-Version direkt (ungepuffert) abfragen. 0 = noch keine Datei, null = keine Verbindung.
+    async function fetchCurrentTeamVersion() {
+      const tryUrl = function(url, headers) {
+        const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const timer = setTimeout(function() { if (ctrl) ctrl.abort(); }, 10000);
+        return fetch(url, Object.assign({ cache: "no-store", headers: headers || {} }, ctrl ? { signal: ctrl.signal } : {}))
+          .then(function(r) {
+            clearTimeout(timer);
+            if (r.status === 404) return 0;
+            if (!r.ok) throw new Error("http" + r.status);
+            return r.json().then(function(j) { if (typeof j.version !== "number") throw new Error("format"); return j.version; });
+          })
+          .catch(function(e) { clearTimeout(timer); throw e; });
+      };
+      try { return await tryUrl(SYNC_CONFIG.dataApiUrl, { "Accept": "application/vnd.github.raw" }); } catch (e) {}
+      try { return await tryUrl(SYNC_CONFIG.dataUrl + "?t=" + Date.now()); } catch (e) {}
+      return null;
+    }
+
     function setSyncStatusText(t, isErr) {
       const el = document.getElementById("syncStatusText");
       if (!el) return;

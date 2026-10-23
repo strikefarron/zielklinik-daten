@@ -1,5 +1,5 @@
 /* Zielklinik-Matrix – Offline-Speicher (automatisch erzeugt) */
-const CACHE = 'zkm-f36e9eb8e7cb';
+const CACHE = 'zkm-758cb651c09e';
 const FILES = ["./","index.html","manifest.webmanifest","icon-180.png","icon-192.png","icon-512.png","icon-maskable-512.png"];
 
 self.addEventListener('install', (event) => {
