@@ -1,6 +1,6 @@
 {
-  "versionCode": 4,
-  "versionName": "2.2.0",
+  "versionCode": 6,
+  "versionName": "2.3.1",
   "apkUrl": "https://github.com/strikefarron/zielklinik-daten/raw/main/apk/Zielklinik_Matrix_HD.apk",
-  "hinweis": "Team-Sync, Backup speichern/laden in der App."
+  "hinweis": "Test des In-App-Updates."
 }
