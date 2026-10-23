@@ -6,6 +6,7 @@ Dieses Repository versorgt die Zielklinik-Matrix-App (Android + HTML) mit dem ge
 |---|---|---|
 | `daten.enc.json` | Klinikdaten, **verschlüsselt** (AES-256-GCM, Schlüssel aus dem Team-Passwort via PBKDF2-SHA256) | nein – ohne Passwort unlesbar |
 | `app.json` | Aktuelle App-Version + Download-Link (löst in der App den Update-Hinweis aus) | nein |
+| `docs/` | Web-App für iPhone/iPad und PC: https://strikefarron.github.io/zielklinik-daten/ (GitHub Pages, offline-fähig) | nein (nur öffentliche Standarddaten) |
 | `apk/Zielklinik_Matrix_HD.apk` | Aktuelle Android-App | nein (enthält nur öffentliche Standarddaten) |
 
 ## Daten aktualisieren (Pfleger)

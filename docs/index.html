@@ -1,0 +1,2740 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="theme-color" content="#0b0d10" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Zielklinik HD" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-180.png" />
+  <title>Zielklinik-Matrix App – Rettungsdienst HD &amp; RNK</title>
+  <style>
+    :root {
+      --bg-main: #0b0d10; --bg-panel: #14171c; --bg-input: #181c23;
+      --border-subtle: #262a34; --border-hover: #383e4c;
+      --text-main: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
+      --blue-active-bg: #1e3a8a; --blue-active-border: #3b82f6;
+      --blue-badge-bg: rgba(29, 78, 216, 0.35); --blue-badge-border: #2563eb; --blue-badge-text: #93c5fd;
+      --green-box-bg: rgba(6, 78, 59, 0.32); --green-box-border: rgba(16, 185, 129, 0.32); --green-box-text: #ecfdf5;
+      --red-box-bg: rgba(127, 29, 29, 0.34); --red-box-border: rgba(239, 68, 68, 0.35); --red-box-text: #fef2f2;
+      --amber-box-bg: rgba(120, 53, 15, 0.38); --amber-box-border: rgba(245, 158, 11, 0.5); --amber-box-text: #fef3c7;
+      --link-box-bg: rgba(30, 58, 138, 0.38); --link-box-border: rgba(59, 130, 246, 0.48); --link-box-text: #eff6ff;
+    }
+    html.theme-light {
+      --bg-main: #f1f5f9; --bg-panel: #ffffff; --bg-input: #f8fafc;
+      --border-subtle: #cbd5e1; --border-hover: #94a3b8;
+      --text-main: #0f172a; --text-muted: #475569; --text-dim: #64748b;
+      --blue-active-bg: #1d4ed8; --blue-active-border: #1e40af;
+      --blue-badge-bg: #eff6ff; --blue-badge-border: #3b82f6; --blue-badge-text: #1d4ed8;
+      --green-box-bg: #ecfdf5; --green-box-border: #10b981; --green-box-text: #064e3b;
+      --red-box-bg: #fff1f2; --red-box-border: #f43f5e; --red-box-text: #881337;
+      --amber-box-bg: #fffbeb; --amber-box-border: #f59e0b; --amber-box-text: #78350f;
+      --link-box-bg: #eff6ff; --link-box-border: #3b82f6; --link-box-text: #1e3a8a;
+    }
+    html.theme-light .brand-title h1,
+    html.theme-light .clinic-title { color: #0f172a !important; }
+    html.theme-light .filter-pill:not(.active),
+    html.theme-light .action-btn,
+    html.theme-light .tool-btn,
+    html.theme-light .detail-toggle-btn,
+    html.theme-light .resource-tag,
+    html.theme-light .badge-plan,
+    html.theme-light .header-dropdown-menu,
+    html.theme-light .dropdown-item {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+    html.theme-light .hours-box {
+      background: #f0f9ff !important; border-color: #bae6fd !important; border-left-color: #0284c7 !important; color: #0c4a6e !important;
+    }
+    html.theme-light .search-highlight {
+      background-color: #fde047 !important; color: #0f172a !important; border-bottom: 2px solid #ca8a04 !important;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: var(--bg-main); color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5; padding: 14px; padding-bottom: 80px; min-height: 100vh;
+    }
+    .app-wrapper { max-width: 1280px; margin: 0 auto; }
+
+    /* Header */
+    .top-appbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; padding: 6px 2px; }
+    .brand-title { display: flex; align-items: center; gap: 10px; }
+    .drk-badge { background: #dc2626; color: #fff; font-weight: 800; font-size: 0.78rem; padding: 5px 10px; border-radius: 6px; letter-spacing: 0.04em; white-space: nowrap; }
+    .brand-title h1 { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; line-height: 1.25; }
+    .appbar-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .action-btn {
+      background-color: #181c23; color: #e2e8f0; border: 1px solid #2d3340; border-radius: 9999px;
+      padding: 8px 14px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s ease; text-decoration: none;
+    }
+    .action-btn:hover, .action-btn:active { background-color: #232934; border-color: #475569; }
+    .action-btn.primary-action { background-color: rgba(29, 78, 216, 0.28); border-color: #3b82f6; color: #93c5fd; }
+    .action-btn.green-action { background-color: rgba(6, 78, 59, 0.48); border-color: #10b981; color: #a7f3d0; }
+    .action-btn.amber-action { background-color: rgba(120, 53, 15, 0.42); border-color: #f59e0b; color: #fde68a; }
+    .header-dropdown-wrap { position: relative; display: inline-block; }
+    .header-dropdown-menu {
+      display: none; position: absolute; right: 0; top: calc(100% + 8px); width: 245px;
+      background: #14171c; border: 1px solid #334155; border-radius: 14px; padding: 6px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.7); z-index: 500;
+    }
+    .header-dropdown-menu.open { display: block; }
+    .dropdown-item {
+      width: 100%; background: transparent; border: none; color: #e2e8f0;
+      padding: 9px 12px; border-radius: 9px; font-size: 0.82rem; font-weight: 600;
+      text-align: left; cursor: pointer; display: flex; align-items: center; gap: 8px; text-decoration: none;
+    }
+    .dropdown-item:hover { background: #1e293b; color: #fff; }
+    .dropdown-divider { height: 1px; background: #262a34; margin: 4px 0; }
+
+    /* Control Panel */
+    .control-panel {
+      background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+      border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+    }
+    .search-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .search-input-wrap { flex: 1 1 280px; position: relative; }
+    .search-input {
+      width: 100%; background-color: var(--bg-input); border: 1px solid #2c323f;
+      border-radius: 10px; padding: 11px 36px 11px 14px; color: var(--text-main); font-size: 0.94rem; outline: none;
+    }
+    .search-input::placeholder { color: #7c8698; }
+    .search-input:focus { border-color: #3b82f6; }
+    .clear-search-btn {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; padding: 4px; display: none;
+    }
+    .toggle-all-details-btn {
+      background-color: var(--bg-input); border: 1px solid #2c323f; color: #cbd5e1;
+      border-radius: 10px; padding: 10px 14px; font-size: 0.84rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+    }
+    .toggle-all-details-btn:hover { background-color: #232934; color: #fff; }
+
+    /* Filter Pills (Touch-Scrollable on Phones) */
+    .filter-group { margin-top: 10px; }
+    .filter-label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    @media (max-width: 680px) {
+      .pill-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .pill-row::-webkit-scrollbar { display: none; }
+      .filter-pill { flex: 0 0 auto; }
+    }
+    .filter-pill {
+      background-color: #181c23; color: #e2e8f0; border: 1px solid #262a34;
+      border-radius: 9999px; padding: 6px 13px; font-size: 0.83rem; font-weight: 600; cursor: pointer;
+    }
+    .filter-pill.active { background-color: var(--blue-active-bg); border-color: var(--blue-active-border); color: #fff; }
+
+    /* Fahrzeit- & Distanz-Rechner */
+    .estimator-panel {
+      background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+      border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.35);
+    }
+    .estimator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+    @media (max-width: 760px) { .estimator-grid { grid-template-columns: 1fr; } }
+    .estimator-results {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px;
+      background: #181c23; border: 1px solid #262a34; border-radius: 12px; padding: 10px;
+    }
+    @media (max-width: 640px) { .estimator-results { grid-template-columns: 1fr; } }
+    .est-box { border-radius: 9px; padding: 8px 11px; }
+    .est-box.sosi { background: rgba(127, 29, 29, 0.28); border: 1px solid rgba(239, 68, 68, 0.35); color: #fecaca; }
+    .est-box.normal { background: rgba(30, 58, 138, 0.28); border: 1px solid rgba(59, 130, 246, 0.35); color: #bfdbfe; }
+    .est-box.dist { background: rgba(30, 41, 59, 0.6); border: 1px solid #334155; color: #e2e8f0; }
+
+    /* Status Bar */
+    .status-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; padding: 0 4px; color: var(--text-muted); font-size: 0.86rem; }
+    .status-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .mini-btn { background: #1e293b; color: #93c5fd; border: 1px solid #334155; border-radius: 8px; padding: 5px 11px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+    .mini-btn.active-sort { background: rgba(6, 78, 59, 0.65); border-color: #10b981; color: #d1fae5; }
+
+    /* Search Highlighting */
+    .search-highlight {
+      background-color: rgba(251, 191, 36, 0.35);
+      color: #fef08a;
+      font-weight: 600;
+      padding: 1px 3px;
+      border-radius: 4px;
+      border-bottom: 1px solid #f59e0b;
+    }
+
+    /* Grid & Compact Cards */
+    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media (max-width: 900px) { .cards-grid { grid-template-columns: 1fr; } body { padding: 10px; padding-bottom: 85px; } }
+    .clinic-card {
+      background-color: var(--bg-panel); border: 1px solid var(--border-subtle);
+      border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; position: relative;
+      transition: border-color 0.15s ease;
+    }
+    .clinic-card:hover { border-color: var(--border-hover); }
+    .clinic-card.pulse-highlight { border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.35); }
+
+    .card-header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .clinic-title { font-size: 1.12rem; font-weight: 700; color: #fff; line-height: 1.3; }
+    .card-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; flex-shrink: 0; }
+    .tool-btn {
+      background: #1f242e; border: 1px solid #323946; color: #cbd5e1; border-radius: 8px;
+      padding: 5px 9px; font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .tool-btn:hover, .tool-btn:active { background: #2d3544; color: #fff; border-color: #60a5fa; }
+    .tool-btn.edit-btn { background: rgba(30, 58, 138, 0.35); border-color: rgba(59, 130, 246, 0.5); color: #93c5fd; }
+    .tool-btn.call-btn { background: rgba(6, 78, 59, 0.4); border-color: rgba(16, 185, 129, 0.45); color: #a7f3d0; }
+
+    .clinic-location { font-size: 0.85rem; color: var(--text-muted); margin-top: 3px; margin-bottom: 9px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .copy-chip-btn { background: transparent; border: none; color: #64748b; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 3px; padding: 2px 4px; border-radius: 4px; }
+    .copy-chip-btn:hover { color: #94a3b8; background: #1e242d; }
+    .travel-badge.est { background: rgba(120, 53, 15, 0.45) !important; border-color: rgba(245, 158, 11, 0.5) !important; color: #fde68a !important; }
+    .travel-source { grid-column: 1 / -1; font-size: 0.72rem; color: #94a3b8; line-height: 1.4; padding: 2px 2px 0; }
+    .travel-source.est { color: #fbbf24; }
+    .travel-badge {
+      display: inline-flex; align-items: center; gap: 4px; background: rgba(6, 78, 59, 0.45);
+      border: 1px solid rgba(16, 185, 129, 0.45); color: #a7f3d0; font-size: 0.75rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 6px;
+    }
+
+    /* Uhrzeiten & Live-Status Box */
+    .hours-box {
+      background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-left: 3px solid #38bdf8;
+      border-radius: 8px; padding: 7px 11px; margin-bottom: 9px; font-size: 0.83rem; color: #e0f2fe;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .hours-text { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+    .hours-edit-quick {
+      background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.4); color: #7dd3fc;
+      border-radius: 6px; padding: 3px 8px; font-size: 0.72rem; font-weight: 600; cursor: pointer; white-space: nowrap;
+    }
+    .custom-note-box {
+      background-color: var(--amber-box-bg); border: 1px solid var(--amber-box-border); color: var(--amber-box-text);
+      border-radius: 8px; padding: 8px 11px; margin-bottom: 9px; font-size: 0.84rem; font-weight: 600;
+    }
+
+    .badge-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .badge-gba { background-color: var(--blue-badge-bg); border: 1px solid var(--blue-badge-border); color: var(--blue-badge-text); font-size: 0.76rem; font-weight: 600; padding: 3px 10px; border-radius: 9999px; }
+    .badge-plan { background-color: #181c24; border: 1px solid #323946; color: #cbd5e1; font-size: 0.76rem; font-weight: 500; padding: 3px 10px; border-radius: 9999px; }
+
+    .resources-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .resource-tag { background-color: #1e232d; color: #e2e8f0; font-size: 0.76rem; font-weight: 500; padding: 3px 9px; border-radius: 6px; }
+
+    /* Dropdown Detail Trigger & Accordion Panel */
+    .detail-toggle-btn {
+      width: 100%; margin-top: auto; padding: 8px 12px;
+      background: #181c23; border: 1px solid #282f3d; color: #cbd5e1;
+      border-radius: 10px; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .detail-toggle-btn:hover { background: #202632; color: #fff; border-color: #3b82f6; }
+    .detail-toggle-btn.open { background: #1e293b; color: #93c5fd; border-color: #3b82f6; }
+    .detail-match-indicator {
+      background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fde68a;
+      font-size: 0.72rem; padding: 2px 7px; border-radius: 999px; font-weight: 700;
+    }
+
+    .detail-content-panel {
+      display: none; margin-top: 10px; padding-top: 6px;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .detail-content-panel.open { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-heading { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 10px; margin-bottom: 4px; }
+    .box-indikationen { background-color: var(--green-box-bg); border: 1px solid var(--green-box-border); color: var(--green-box-text); border-radius: 8px; padding: 9px 13px; font-size: 0.85rem; }
+    .box-indikationen ul { padding-left: 17px; margin: 0; }
+    .box-indikationen li { margin-bottom: 2px; }
+    .box-ausschluss { background-color: var(--red-box-bg); border: 1px solid var(--red-box-border); color: var(--red-box-text); border-radius: 8px; padding: 9px 13px; font-size: 0.85rem; }
+    .box-verknuepfung { background-color: var(--link-box-bg); border: 1px solid var(--link-box-border); color: var(--link-box-text); border-radius: 8px; padding: 9px 13px; font-size: 0.85rem; }
+
+    .jump-links-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 8px; padding-top: 7px; border-top: 1px solid rgba(96, 165, 250, 0.25); }
+    .jump-label { font-size: 0.73rem; color: #93c5fd; font-weight: 600; }
+    .jump-chip { background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(96, 165, 250, 0.45); color: #bfdbfe; border-radius: 6px; padding: 3px 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; }
+
+    /* Modals & Editor Form */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.82); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 10px; }
+    .modal-backdrop.open { display: flex; }
+    .modal-content { background: #14171c; border: 1px solid #334155; border-radius: 16px; max-width: 760px; width: 100%; max-height: 92vh; overflow-y: auto; padding: 18px; color: #f8fafc; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #262a34; position: sticky; top: -18px; background: #14171c; z-index: 10; padding-top: 4px; }
+    .modal-close { background: #1f242d; border: 1px solid #334155; color: #cbd5e1; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 600; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { margin-bottom: 10px; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: #93c5fd; margin-bottom: 4px; }
+    .form-hint { font-size: 0.73rem; color: #64748b; font-weight: 400; }
+    .form-input, .form-textarea, .form-select {
+      width: 100%; background: #0f1217; border: 1px solid #2e3646; border-radius: 8px;
+      padding: 9px 11px; color: #f8fafc; font-size: 0.88rem; font-family: inherit; outline: none;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: #3b82f6; }
+    .form-textarea { min-height: 74px; resize: vertical; }
+    .checkbox-grid { display: flex; flex-wrap: wrap; gap: 7px; background: #0f1217; border: 1px solid #2e3646; border-radius: 8px; padding: 9px; }
+    .checkbox-pill { display: inline-flex; align-items: center; gap: 5px; background: #181c23; border: 1px solid #2d3340; padding: 5px 9px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
+    .modal-footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #262a34; }
+    .sync-badge { font-size: 0.76rem; color: #a7f3d0; background: rgba(6,78,59,0.45); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.45); cursor: pointer; }
+    .update-banner { display: none; margin-bottom: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(30,58,138,0.55); border: 1px solid rgba(96,165,250,0.6); color: #dbeafe; font-size: 0.85rem; }
+    .update-banner button { margin-left: 8px; }
+    .sync-input { width: 100%; padding: 9px 11px; border-radius: 8px; border: 1px solid #334155; background: #0f1115; color: #e2e8f0; font-size: 0.95rem; margin-bottom: 8px; }
+    .sync-status { font-size: 0.82rem; color: #cbd5e1; line-height: 1.5; }
+    .sync-status.err { color: #fca5a5; }
+    .option-box { background: #181c23; border: 1px solid #2d3340; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .option-box h3 { font-size: 0.95rem; font-weight: 700; color: #93c5fd; margin-bottom: 5px; }
+    .option-box p { font-size: 0.84rem; color: #cbd5e1; margin-bottom: 10px; }
+
+    .toast-msg {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #10b981; color: #052e16; font-weight: 700; font-size: 0.86rem;
+      padding: 10px 18px; border-radius: 999px; box-shadow: 0 10px 25px rgba(0,0,0,0.6); z-index: 2000; display: none;
+    }
+
+    @media print {
+      body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+      .top-appbar, .control-panel, .estimator-panel, .status-actions, .jump-links-row, .modal-backdrop, .card-tools, .hours-edit-quick, .detail-toggle-btn { display: none !important; }
+      .cards-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+      .clinic-card { background: #fff !important; border: 1px solid #64748b !important; color: #000 !important; break-inside: avoid; }
+      .detail-content-panel { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- Top Header -->
+    <header class="top-appbar">
+      <div class="brand-title">
+        <span class="drk-badge">DRK HD / RNK</span>
+        <h1>Zielklinik-Matrix App <span style="font-weight:400; font-size:0.82rem; color:#94a3b8;">(Tolerante Suche, Fahrzeit-Rechner &amp; ZNA-Zeiten)</span></h1>
+      </div>
+      <div class="appbar-actions">
+        <button type="button" class="action-btn" style="background:#1e232d; border-radius:10px;" onclick="openEditorModal(null, false)">
+          ➕ Neue Klinik
+        </button>
+
+        <div class="header-dropdown-wrap" id="headerDropdownWrap">
+          <button type="button" class="action-btn primary-action" style="border-radius:10px;" onclick="toggleHeaderDropdown(event)">
+            📥 App &amp; Downloads ▾
+          </button>
+          <div class="header-dropdown-menu" id="headerDropdownMenu">
+            <button type="button" class="dropdown-item" id="themeToggleDropdownBtn" onclick="toggleTheme()">
+              <span>☀️</span> <span id="themeToggleLabel">Tag-Modus (Hell / Kontrast)</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" style="color:#93c5fd;" onclick="closeHeaderDropdown(); openSyncModal();">
+              <span>🔄</span> <span>Team-Sync (Daten aktualisieren)</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" style="color:#6ee7b7;" onclick="closeHeaderDropdown(); openBackupModal();">
+              <span>📥</span> <span>Alles herunterladen / Backup</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" onclick="closeHeaderDropdown(); openIosModal();">
+              <span>🍎</span> <span>iOS (iPhone)</span>
+            </button>
+            <button type="button" class="dropdown-item" onclick="closeHeaderDropdown(); downloadStandaloneHTML();">
+              <span>💾</span> <span>App (.html) speichern</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" style="color:#fde68a;" onclick="closeHeaderDropdown(); openBackupModal();">
+              <span>⚙️</span> <span>Daten &amp; Backup</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="appUpdateBanner" class="update-banner"></div>
+
+    <!-- Such- und Filter-Panel -->
+    <section class="control-panel">
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Tolerante Suche (z. B. 'grn', 'sinshem', 'stroke', 'urologie')..."
+            oninput="handleSearchInput()"
+          />
+          <button type="button" id="clearSearchBtn" class="clear-search-btn" onclick="clearSearch()">✕</button>
+        </div>
+        <button type="button" id="toggleAllDetailsBtn" class="toggle-all-details-btn" onclick="toggleAllDetails()">
+          ▼ Alle Details aufklappen
+        </button>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">G-BA / Systematik:</span>
+        <div class="pill-row" id="gbaPillsContainer"></div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">Taktisches Szenario:</span>
+        <div class="pill-row" id="scenarioPillsContainer"></div>
+      </div>
+    </section>
+
+    <!-- Fahrzeit- & Distanz-Rechner -->
+    <section class="estimator-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:#6ee7b7; padding:4px 8px; border-radius:8px; font-weight:700; font-size:0.8rem;">🚑 Fahrzeit- &amp; Distanz-Rechner</span>
+          <span style="font-size:0.78rem; color:#94a3b8;">Startpunkt &amp; Zielklinik wählen für geschätzte Anfahrtszeit (SoSi vs. Normalfahrt)</span>
+        </div>
+      </div>
+
+      <div class="estimator-grid">
+        <div>
+          <label class="filter-label">1. Startpunkt (Einsatzort / Rettungswache / GPS):</label>
+          <div style="display:flex; gap:6px;">
+            <select id="startPointSelect" class="form-select" onchange="handleStartPointChange()"></select>
+            <button type="button" id="locateGpsBtn" class="action-btn green-action" style="border-radius:8px; white-space:nowrap;" onclick="locateUserGps()">📍 GPS</button>
+          </div>
+        </div>
+        <div>
+          <label class="filter-label">2. Zielklinik aus der Liste auswählen:</label>
+          <select id="destClinicSelect" class="form-select" onchange="renderEstimatorResult()"></select>
+        </div>
+      </div>
+
+      <div id="gpsErrorHelpBox" style="display:none; margin-bottom:10px; padding:10px 12px; border-radius:10px; background:rgba(120,53,15,0.45); border:1px solid rgba(245,158,11,0.5); color:#fde68a; font-size:0.78rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div id="gpsErrorHelpText" style="flex:1; min-width:200px;">
+            <strong>📍 Standort-Freigabe erforderlich:</strong> Bitte erlaube den Standortzugriff für die App oder schalte GPS ein.
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="action-btn" style="background:#d97706; border-color:#f59e0b; color:#fff; border-radius:8px; padding:5px 10px; font-size:0.75rem;" onclick="openLocationSettings()">⚙️ Standort-Freigabe öffnen</button>
+            <button type="button" class="action-btn" style="border-radius:8px; padding:5px 10px; font-size:0.75rem;" onclick="locateUserGps()">🔄 Erneut versuchen</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="estimatorResultContainer"></div>
+    </section>
+
+    <!-- Statuszeile -->
+    <div class="status-bar">
+      <div id="statusCounter">15 Standorte aktiv</div>
+      <div class="status-actions">
+        <button type="button" id="sortTravelBtn" class="mini-btn" onclick="toggleSortByTravelTime()">
+          ↕ Nach Fahrzeit sortieren
+        </button>
+        <span id="customDataBadge" style="display:none; font-size:0.76rem; color:#fde68a; background:rgba(120,53,15,0.4); padding:3px 8px; border-radius:6px; border:1px solid rgba(245,158,11,0.4);">
+          ✏️ Eigene Änderungen gespeichert
+        </span>
+        <span id="syncBadge" class="sync-badge" style="display:none;" onclick="openSyncModal()"></span>
+        <button type="button" id="resetFiltersBtn" class="mini-btn" style="display: none;" onclick="resetAllFilters()">
+          Filter zurücksetzen
+        </button>
+      </div>
+    </div>
+
+    <!-- Karten-Grid -->
+    <main class="cards-grid" id="cardsGrid"></main>
+  </div>
+
+  <!-- MODAL 1: KLINIK-EDITOR -->
+  <div class="modal-backdrop" id="editorModal" onclick="if(event.target === this) closeEditorModal()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="editorModalTitle" style="font-size: 1.1rem; font-weight: 700;">✏️ Klinik &amp; Uhrzeiten bearbeiten</h2>
+        <button type="button" class="modal-close" onclick="closeEditorModal()">Schließen ✕</button>
+      </div>
+
+      <form id="clinicEditForm" onsubmit="saveClinicFromForm(event)">
+        <input type="hidden" id="edit_id" />
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label class="form-label">🕒 Uhrzeiten &amp; Erreichbarkeit <span class="form-hint">(ZNA-Zeiten, HKL-Zeiten, D-Arzt, Bereitschaft...)</span></label>
+            <input type="text" id="edit_uhrzeiten" class="form-input" placeholder="z. B. ZNA & Schockraum: 24/7 | HKL: Mo–Fr 07:30–17:00 Uhr" />
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">⚠️ Aktuelle Tagesnotiz / Sonderstatus <span class="form-hint">(Wird gelb hervorgehoben – leer lassen für Normalbetrieb)</span></label>
+            <input type="text" id="edit_notiz" class="form-input" placeholder="z. B. Schockraum 1 wegen Umbau gesperrt / Voranmeldung zwingend!" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Klinik-Name *</label>
+            <input type="text" id="edit_name" class="form-input" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Kurzname (für Sprung-Buttons) *</label>
+            <input type="text" id="edit_shortLabel" class="form-input" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Standort / Adresse (für Route) *</label>
+            <input type="text" id="edit_standort" class="form-input" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">📞 Telefonnummer (für 1-Tap-Anruf)</label>
+            <input type="tel" id="edit_telefon" class="form-input" placeholder="z. B. 06221 56-0" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">G-BA-Stufe (Badge)</label>
+            <input type="text" id="edit_gba_stufe" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Planungsebene (Badge)</label>
+            <input type="text" id="edit_planungsebene" class="form-input" />
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Filter-Kategorie (G-BA-Leiste)</label>
+            <select id="edit_kategorie_filter" class="form-select">
+              <option value="Stufe 3 (Maximal)">Stufe 3 (Maximal)</option>
+              <option value="Stufe 2 (Erweitert)">Stufe 2 (Erweitert)</option>
+              <option value="Stufe 1 (Basis)">Stufe 1 (Basis)</option>
+              <option value="Spezial / Fachklinik">Spezial / Fachklinik</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Zugeordnete Taktische Szenarien</label>
+            <div class="checkbox-grid" id="edit_szenarien_container"></div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Spezielle Ressourcen <span class="form-hint">(Ein Eintrag pro Zeile)</span></label>
+            <textarea id="edit_ressourcen" class="form-textarea"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Indikationen <span class="form-hint">(Ein Punkt pro Zeile)</span></label>
+            <textarea id="edit_indikationen" class="form-textarea"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Ausschlusskriterien</label>
+            <textarea id="edit_ausschluss" class="form-textarea" style="min-height:55px;"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Taktische Verknüpfung / Eskalationspfad</label>
+            <textarea id="edit_verknuepfung" class="form-textarea" style="min-height:60px;"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div>
+            <button type="button" id="deleteClinicBtn" class="action-btn" style="background:rgba(127,29,29,0.4); border-color:#ef4444; color:#fecaca; display:none;" onclick="deleteCurrentClinic()">
+              🗑️ Klinik löschen
+            </button>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="action-btn" onclick="closeEditorModal()">Abbrechen</button>
+            <button type="submit" class="action-btn green-action">💾 Speichern</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: DATEN-BACKUP & RESET -->
+  <div class="modal-backdrop" id="backupModal" onclick="if(event.target === this) closeBackupModal()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="font-size: 1.1rem; font-weight: 700;">⚙️ Daten verwalten &amp; Backup</h2>
+        <button type="button" class="modal-close" onclick="closeBackupModal()">Schließen ✕</button>
+      </div>
+
+      <div class="option-box">
+        <h3>1. Komplett-App (.HTML) inklusive deiner Änderungen speichern</h3>
+        <p>
+          Speichert die gesamte App als neue <code>.html</code>-Datei. Alle deine eingetragenen Uhrzeiten, Notizen und Änderungen sind direkt fest verankert und offline nutzbar!
+        </p>
+        <button type="button" class="action-btn green-action" onclick="downloadStandaloneHTML()">
+          💾 App (.html) herunterladen
+        </button>
+      </div>
+
+      <div class="option-box">
+        <h3>2. Datenbank-Backup (.JSON) exportieren / importieren</h3>
+        <p>Sichere deine Klinikdaten als JSON oder lade ein Backup ein:</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="action-btn primary-action" onclick="exportJsonData()">
+            📤 JSON-Backup speichern
+          </button>
+          <label class="action-btn" style="cursor:pointer;">
+            📥 JSON-Backup laden
+            <input type="file" accept=".json" style="display:none;" onchange="importJsonData(event)" />
+          </label>
+        </div>
+      </div>
+
+      <div class="option-box" style="margin-bottom:0; border-color:rgba(239,68,68,0.4);">
+        <h3 style="color:#fca5a5;">3. Auf Werkseinstellungen zurücksetzen</h3>
+        <p>Setzt alle Standorte wieder auf den ursprünglichen Zustand zurück.</p>
+        <button type="button" class="action-btn" style="border-color:#ef4444; color:#fca5a5;" onclick="resetToFactoryDefaults()">
+          🔄 Alle Änderungen zurücksetzen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TEAM-SYNC -->
+  <div class="modal-backdrop" id="syncModal" onclick="if(event.target === this) closeSyncModal()">
+    <div class="modal-content" style="max-width:600px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.1rem; font-weight: 700;">🔄 Team-Sync</h2>
+        <button type="button" class="modal-close" onclick="closeSyncModal()">Schließen ✕</button>
+      </div>
+
+      <div class="option-box">
+        <h3>Status</h3>
+        <div id="syncStatusText" class="sync-status">–</div>
+      </div>
+
+      <div class="option-box">
+        <h3>1. Team-Passwort</h3>
+        <p>Einmal eingeben – danach holt die App beim Start automatisch den neuesten Stand (Internet nötig, offline gilt der zuletzt geladene Stand).</p>
+        <input type="password" id="syncPasswordInput" class="sync-input" placeholder="Team-Passwort" autocomplete="off" />
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="action-btn green-action" onclick="saveSyncPassword()">🔓 Speichern &amp; Daten laden</button>
+          <button type="button" class="action-btn primary-action" onclick="runSync(true)">🔄 Jetzt aktualisieren</button>
+          <button type="button" class="action-btn" id="syncUndoBtn" style="display:none;" onclick="undoLastSync()">↩️ Stand vor letzter Aktualisierung</button>
+          <button type="button" class="action-btn" style="border-color:#ef4444; color:#fca5a5;" onclick="clearSyncPassword()">Passwort entfernen</button>
+        </div>
+        <p style="margin-top:8px; font-size:0.76rem; color:#94a3b8;">Eigene Notizen zu einer Klinik bleiben bei der Aktualisierung erhalten. Alle anderen Felder kommen aus dem Team-Stand.</p>
+      </div>
+
+      <div class="option-box" style="margin-bottom:0; border-color:rgba(245,158,11,0.4);">
+        <h3 style="color:#fde68a;">2. Für die Datenpflege: Sync-Datei erstellen</h3>
+        <p>Verschlüsselt die aktuellen Klinikdaten dieses Geräts mit dem Passwort oben und speichert sie als <code>daten.enc.json</code>. Diese Datei dann im GitHub-Repository hochladen (vorhandene Datei ersetzen). Danach erhalten alle Apps den neuen Stand.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="action-btn" style="background:#d97706; border-color:#f59e0b; color:#fff;" onclick="createSyncFile()">🔐 Sync-Datei erstellen</button>
+          <button type="button" class="action-btn" onclick="openExternal(SYNC_CONFIG.repoUrl)">↗ GitHub-Repository öffnen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: IOS ANLEITUNG -->
+  <div class="modal-backdrop" id="iosModal" onclick="if(event.target === this) closeIosModal()">
+    <div class="modal-content" style="max-width:560px;">
+      <div class="modal-header">
+        <h2 style="font-size: 1.1rem; font-weight: 700;">🍎 Zielklinik App auf iOS (iPhone / iPad)</h2>
+        <button type="button" class="modal-close" onclick="closeIosModal()">Schließen ✕</button>
+      </div>
+
+      <div style="background:rgba(30,58,138,0.3); border:1px solid rgba(59,130,246,0.4); border-radius:10px; padding:12px; margin-bottom:14px; font-size:0.82rem; color:#bfdbfe;">
+        <strong>Hinweis zu Apple iOS:</strong><br/>
+        Auf dem iPhone gibt es keine .apk-Dateien. Stattdessen wird die App als <strong>Home-Bildschirm-Web-App</strong> eingerichtet: Vollbild, mit eigenem Icon, nach dem ersten Öffnen auch <strong>offline</strong> nutzbar. Updates kommen automatisch beim Start mit Internet.<br/>
+        <span style="color:#fde68a;">Wichtig: nicht als heruntergeladene HTML-Datei öffnen, sondern über die Internetadresse unten.</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:0.85rem;">
+        <div style="display:flex; align-items:flex-start; gap:10px; background:#181c23; border:1px solid #2d3340; border-radius:10px; padding:12px;">
+          <div style="background:#dc2626; color:#fff; font-weight:bold; width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</div>
+          <div>
+            <strong>Diese Adresse in Safari öffnen</strong>
+            <p style="color:#94a3b8; font-size:0.78rem; margin-top:2px;"><span id="iosWebUrl" style="color:#93c5fd; word-break:break-all;"></span></p>
+            <button type="button" class="action-btn" style="margin-top:6px; padding:5px 10px; font-size:0.78rem;" onclick="copyWebUrl()">📋 Adresse kopieren</button>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; background:#181c23; border:1px solid #2d3340; border-radius:10px; padding:12px;">
+          <div style="background:#dc2626; color:#fff; font-weight:bold; width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</div>
+          <div>
+            <strong>Unten auf das Teilen-Symbol tippen (📤)</strong>
+            <p style="color:#94a3b8; font-size:0.78rem; margin-top:2px;">Tippe in Safari unten in der Mitte auf das Viereck mit dem Pfeil nach oben.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; background:#181c23; border:1px solid #2d3340; border-radius:10px; padding:12px;">
+          <div style="background:#dc2626; color:#fff; font-weight:bold; width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">3</div>
+          <div>
+            <strong>„Zum Home-Bildschirm“ wählen</strong>
+            <p style="color:#94a3b8; font-size:0.78rem; margin-top:2px;">Scrolle im Teilen-Menü etwas nach unten und wähle „Zum Home-Bildschirm“.</p>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:flex-start; gap:10px; background:#181c23; border:1px solid #2d3340; border-radius:10px; padding:12px;">
+          <div style="background:#10b981; color:#fff; font-weight:bold; width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">✓</div>
+          <div>
+            <strong>Oben rechts auf „Hinzufügen“ tippen</strong>
+            <p style="color:#94a3b8; font-size:0.78rem; margin-top:2px;">Fertig! Die App einmal mit Internet öffnen, Standort erlauben und im Menü „Team-Sync“ das Team-Passwort eingeben. Danach funktioniert sie auch ohne Netz.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; text-align:right;">
+        <button type="button" class="action-btn primary-action" style="width:100%; justify-content:center; padding:10px;" onclick="closeIosModal()">
+          Alles klar, verstanden!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastMsg" class="toast-msg">✓ Gespeichert!</div>
+
+  <!-- EINGEBETTETER DATENSATZ -->
+  <script id="baked-clinics-data" type="application/json">
+[
+  {
+    "id": "ukhd-chir",
+    "shortLabel": "INF 420 (Chirurgie)",
+    "name": "UKHD – Chirurgische Klinik (INF 420)",
+    "standort": "Im Neuenheimer Feld 420, 69120 Heidelberg",
+    "telefon": "06221 56-6110",
+    "uhrzeiten": "ZNA & Schockraum: 24/7 | ÜTZ & Gefäßchirurgie: 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 3 (Umfassende Notfallversorgung)",
+    "planungsebene": "Planungsebene 3 (Maximalversorger)",
+    "kategorie_filter": "Stufe 3 (Maximal)",
+    "szenarien": [
+      "Trauma / Schockraum",
+      "Abdomen / Gefäß",
+      "Kind / Geburt"
+    ],
+    "spezielle_ressourcen": [
+      "Überregionales Traumazentrum (ÜTZ)",
+      "Gefäß- & Herzchirurgie",
+      "Kinderchirurgie",
+      "RTH-Dachlandeplatz"
+    ],
+    "indikationen_rd": [
+      "Polytrauma & Schockraum-Indikationen (Erwachsene & Kinder)",
+      "Akutes Abdomen / Aortensyndrom / Gefäßnotfall",
+      "Schweres kindliches Trauma (interdisziplinär mit PICU)"
+    ],
+    "ausschluss_rd": "Rein internistische Notfälle (→ INF 410), isolierter Stroke oder isoliertes SHT ohne Rumpfverletzung (→ INF 400)",
+    "verknuepfung_pfad": "Eskalationsziel für St. Josef & alle GRN-Kliniken (Eberbach, Sinsheim, Schwetzingen, Weinheim) bei Polytrauma. Verknüpft mit UKHD Schlierbach (Wirbelsäule/Querschnitt) und BG Ludwigshafen (Schwerbrandverletzte/Replantation).",
+    "linked_ids": [
+      "st-josef",
+      "grn-eberbach",
+      "grn-sinsheim",
+      "ukhd-schlierbach",
+      "bg-ludwigshafen"
+    ]
+  },
+  {
+    "id": "ukhd-med",
+    "shortLabel": "INF 410 (Innere)",
+    "name": "UKHD – Medizinische Klinik (INF 410)",
+    "standort": "Im Neuenheimer Feld 410, 69120 Heidelberg",
+    "telefon": "06221 56-8611",
+    "uhrzeiten": "ZNA, CPU, HKL & ECMO/eCPR: 24/7 durchgehend",
+    "notiz": "",
+    "gba_stufe": "Stufe 3 (Umfassende Notfallversorgung)",
+    "planungsebene": "Planungsebene 3 (Maximalversorger)",
+    "kategorie_filter": "Stufe 3 (Maximal)",
+    "szenarien": [
+      "ACS / Reanimation",
+      "Abdomen / Gefäß",
+      "Psychiatrie / Intox"
+    ],
+    "spezielle_ressourcen": [
+      "Chest Pain Unit (CPU) & 24/7 HKL",
+      "Cardiac Arrest Center (CAC / eCPR / VA-ECMO)",
+      "Toxikologie & Endoskopie 24/7"
+    ],
+    "indikationen_rd": [
+      "STEMI / NSTEMI / Kardiogener Schock",
+      "Laufende Reanimation (eCPR / VA-ECMO)",
+      "Schwere Sepsis, GI-Blutung, schwere Intoxikation"
+    ],
+    "ausschluss_rd": "Chirurgisches Trauma oder akutes chirurgisches Abdomen (→ INF 420)",
+    "verknuepfung_pfad": "Zwingend vorgeschaltetes Medical-Clearing-Ziel vor ZPM Bergheim (Psychiatrie) bei Mischintoxikationen oder instabilen Vitalwerten. Übernimmt komplexe kardiologische Eskalationen der Stufe-1-Häuser.",
+    "linked_ids": [
+      "ukhd-zpm",
+      "ukhd-chir",
+      "st-josef",
+      "thorax-hd"
+    ]
+  },
+  {
+    "id": "ukhd-kopf",
+    "shortLabel": "INF 400 (Kopfklinik)",
+    "name": "UKHD – Kopfklinik (INF 400)",
+    "standort": "Im Neuenheimer Feld 400, 69120 Heidelberg",
+    "telefon": "06221 56-6999",
+    "uhrzeiten": "Stroke Unit, Thrombektomie, Neurochirurgie, HNO & Augen: 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 3 (Umfassende Notfallversorgung)",
+    "planungsebene": "Planungsebene 3 (Maximalversorger)",
+    "kategorie_filter": "Stufe 3 (Maximal)",
+    "szenarien": [
+      "Stroke / Neuro",
+      "Trauma / Schockraum"
+    ],
+    "spezielle_ressourcen": [
+      "Überregionale Stroke Unit (Thrombektomie 24/7)",
+      "Neurochirurgie (SHT / ICB)",
+      "HNO-, Augen- & MKG-Notaufnahme"
+    ],
+    "indikationen_rd": [
+      "Akuter Schlaganfall (FAST positiv / Lyse & Thrombektomie)",
+      "Isoliertes schweres SHT / Intrakranielle Blutung (ICB / SAB)",
+      "Status epilepticus, akute HNO-, Augen- oder MKG-Notfälle"
+    ],
+    "ausschluss_rd": "Polytrauma mit Stammkörper-/Thorax-/Abdominalverletzung (→ primär Schockraum INF 420)",
+    "verknuepfung_pfad": "Zentrum im FAST-Netzwerk: Direktes Primär- und Weiterleitungsziel („Drip & Ship“) für St. Josef HD sowie GRN Eberbach, Sinsheim, Schwetzingen und Weinheim bei Thrombektomie- oder Neurochirurgie-Bedarf.",
+    "linked_ids": [
+      "ukhd-chir",
+      "grn-sinsheim",
+      "grn-eberbach",
+      "grn-schwetzingen",
+      "st-josef"
+    ]
+  },
+  {
+    "id": "ukhd-kind-frau",
+    "shortLabel": "INF 430/440 (Kind/Frau)",
+    "name": "UKHD – Kinder- & Frauenklinik (INF 430/440)",
+    "standort": "Im Neuenheimer Feld 430, 69120 Heidelberg",
+    "telefon": "06221 56-4002",
+    "uhrzeiten": "Kindernotaufnahme & Kreißsaal (Perinatalzentrum Level 1): 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 3 (Umfassende Notfallversorgung)",
+    "planungsebene": "Planungsebene 3 (Maximalversorger)",
+    "kategorie_filter": "Stufe 3 (Maximal)",
+    "szenarien": [
+      "Kind / Geburt"
+    ],
+    "spezielle_ressourcen": [
+      "Perinatalzentrum Level 1",
+      "Umfassende Kindernotfallversorgung (PICU)",
+      "24/7 Kindernotaufnahme"
+    ],
+    "indikationen_rd": [
+      "Alle pädiatrischen Akutnotfälle (Internistisch / Neurologisch)",
+      "Drohende Frühgeburt (< 36+0 SSW) & Risikoschwangerschaften",
+      "Schwere Schwangerschaftskomplikationen (Präeklampsie, Blutung)"
+    ],
+    "ausschluss_rd": "Schweres kindliches Polytrauma (→ primär Schockraum INF 420 unter Hinzuziehung des Pädiatrie-/PICU-Teams)",
+    "verknuepfung_pfad": "Übernimmt alle pädiatrischen und geburtshilflichen Notfälle aus dem Raum GRN Eberbach (dort kein Kreißsaal/Pädiatrie) sowie Früh-/Risikogeburten aus St. Josef HD, Sinsheim, Schwetzingen und Weinheim.",
+    "linked_ids": [
+      "ukhd-chir",
+      "st-josef",
+      "grn-eberbach",
+      "grn-sinsheim"
+    ]
+  },
+  {
+    "id": "ukhd-schlierbach",
+    "shortLabel": "UKHD Schlierbach (Ortho)",
+    "name": "Orthopädische Uniklinik Schlierbach (UKHD)",
+    "standort": "Schlierbacher Landstraße 200a, 69118 Heidelberg",
+    "telefon": "06221 56-25000",
+    "uhrzeiten": "Querschnittzentrum & Orthopädische Ambulanz: 24/7 (Voranmeldung!)",
+    "notiz": "",
+    "gba_stufe": "Spezielle Notfallversorgung (Fachklinik UKHD)",
+    "planungsebene": "Planungsebene 3 (Spezialfachklinik)",
+    "kategorie_filter": "Spezial / Fachklinik",
+    "szenarien": [
+      "Trauma / Schockraum",
+      "Querschnitt / Spezial"
+    ],
+    "spezielle_ressourcen": [
+      "Überregionales Querschnittzentrum (Paraplegiologie)",
+      "Spezielle Wirbelsäulen- & Beckenchirurgie",
+      "Endoprothetik, 24/7 NEF-Standort"
+    ],
+    "indikationen_rd": [
+      "Akute traumatische / nicht-traumatische Querschnittlähmung",
+      "Komplikationen nach Wirbelsäulen-OP oder Endoprothetik",
+      "Isolierte orthopädische Notfälle & septische Knochenchirurgie"
+    ],
+    "ausschluss_rd": "Unselektiertes Polytrauma mit SHT/Thorax/Abdomen, unklares Abdomen, internistische Notfälle",
+    "verknuepfung_pfad": "Eng verknüpft mit Chirurgie INF 420: Bei Polytrauma mit Querschnitt erst Schockraum INF 420 zur Vitalstabilisierung, danach Verlegung nach Schlierbach.",
+    "linked_ids": [
+      "ukhd-chir",
+      "bg-ludwigshafen"
+    ]
+  },
+  {
+    "id": "ukhd-zpm",
+    "shortLabel": "ZPM Bergheim (Psychiatrie HD)",
+    "name": "UKHD – Klinik für Allg. Psychiatrie (ZPM Bergheim)",
+    "standort": "Voßstraße 2, 69115 Heidelberg",
+    "telefon": "06221 56-4466",
+    "uhrzeiten": "Psychiatrische Akutaufnahme (Sektor Stadt HD): 24/7",
+    "notiz": "",
+    "gba_stufe": "24/7 Akutpsychiatrie (§ 1 Abs. 2 G-BA)",
+    "planungsebene": "Planungsebene 1 (Sektor HD) & Ebene 3 (Spezial)",
+    "kategorie_filter": "Spezial / Fachklinik",
+    "szenarien": [
+      "Psychiatrie / Intox"
+    ],
+    "spezielle_ressourcen": [
+      "Geschützte Akutstation (Station Jaspers)",
+      "24/7 Psychiatrischer Dienstarzt (PsychKHG)",
+      "KJP (Kinder-/Jugendpsychiatrie) am Campus"
+    ],
+    "indikationen_rd": [
+      "Akute Eigen-/Fremdgefährdung (PsychKHG) im Sektor STADT HEIDELBERG",
+      "Schwere Psychosen, Manien, suizidale Krisen (somatisch stabil!)",
+      "Kinder- & jugendpsychiatrische Krisen (KJP)"
+    ],
+    "ausschluss_rd": "Intoxikation mit Überwachungspflicht, unklare Bewusstseinsstörung/Delir, Begleittrauma, Wohnort im Rhein-Neckar-Kreis",
+    "verknuepfung_pfad": "Zwei Pflicht-Verknüpfungen: 1. Bei somatischem Problem (Intox/Wunde) immer erst Medical Clearing in INF 410/420! 2. Bei Wohnort Rhein-Neckar-Kreis (z.B. Eberbach, Sinsheim, Weinheim) → PZN Wiesloch!",
+    "linked_ids": [
+      "ukhd-med",
+      "ukhd-chir",
+      "pzn-wiesloch"
+    ]
+  },
+  {
+    "id": "st-josef",
+    "shortLabel": "St. Josef HD",
+    "name": "St. Josefskrankenhaus Heidelberg",
+    "standort": "Landhausstraße 25, 69115 Heidelberg",
+    "telefon": "06221 526-0",
+    "uhrzeiten": "ZNA, HKL & Kreißsaal (ab 36+0 SSW): 24/7 | D-Arzt (BG)",
+    "notiz": "",
+    "gba_stufe": "Stufe 1 (Basisnotfallversorgung)",
+    "planungsebene": "Planungsebene 1 (Grund- & Regelversorgung)",
+    "kategorie_filter": "Stufe 1 (Basis)",
+    "szenarien": [
+      "ACS / Reanimation",
+      "Abdomen / Gefäß",
+      "Kind / Geburt"
+    ],
+    "spezielle_ressourcen": [
+      "24/7 Herzkatheterlabor (HKL)",
+      "Gefäßchirurgie & Überregionales Diabeteszentrum",
+      "BG-Durchgangsarzt & Kreißsaal (ab 36+0 SSW)"
+    ],
+    "indikationen_rd": [
+      "Internistische & chirurgische Regelnotfälle im Stadtgebiet HD",
+      "ACS / Herzkatheter-Indikation",
+      "Arbeits-/BG-Unfälle, normale Geburtshilfe (ab 36+0 SSW)"
+    ],
+    "ausschluss_rd": "Schweres Polytrauma, Stroke (Lyse/Thrombektomie), SHT mit Neurochirurgie-Bedarf, Pädiatrie",
+    "verknuepfung_pfad": "Wichtigster Regelversorger in HD zur Entlastung des UKHD. Eskaliert bei Polytrauma → INF 420, bei Stroke → INF 400, bei Frühgeburt/Kindernotfall → INF 430/440.",
+    "linked_ids": [
+      "ukhd-chir",
+      "ukhd-med",
+      "ukhd-kopf",
+      "ukhd-kind-frau"
+    ]
+  },
+  {
+    "id": "grn-eberbach",
+    "shortLabel": "GRN Eberbach",
+    "name": "GRN-Klinik Eberbach",
+    "standort": "Scheuerbergstraße 3, 69412 Eberbach",
+    "telefon": "06271 83-0",
+    "uhrzeiten": "ZNA & Urologie: 24/7 | HKL: nach Verfügbarkeit/Anmeldung",
+    "notiz": "",
+    "gba_stufe": "Stufe 1 (Basisnotfallversorgung)",
+    "planungsebene": "Planungsebene 1 (Grund- & Regelversorgung)",
+    "kategorie_filter": "Stufe 1 (Basis)",
+    "szenarien": [
+      "ACS / Reanimation",
+      "Abdomen / Gefäß",
+      "Urologie",
+      "Trauma / Schockraum"
+    ],
+    "spezielle_ressourcen": [
+      "Urologische Hauptabteilung & Steinzentrum",
+      "Herzkatheterlabor (HKL)",
+      "Schockraum (Erststabilisierung) & NEF-Standort"
+    ],
+    "indikationen_rd": [
+      "Internistische & chirurgische Regelnotfälle (Neckartal / Odenwald)",
+      "Urologische Akutnotfälle (Kolik, Urosepsis, Harnverhalt, Hodentorsion)",
+      "ACS (nach HKL-Verfügbarkeit), BG-Unfälle, Damage-Control im Schockraum"
+    ],
+    "ausschluss_rd": "Akuter Stroke (keine Stroke Unit), schweres Polytrauma/SHT, Geburtshilfe, Pädiatrie, PsychKHG",
+    "verknuepfung_pfad": "Östlicher Außenposten: Eskaliert bei Stroke → INF 400 oder GRN Sinsheim, bei Polytrauma → INF 420 (ggf. per RTH), bei Geburt/Kind → INF 430/440, bei PsychKHG → PZN Wiesloch.",
+    "linked_ids": [
+      "ukhd-chir",
+      "ukhd-kopf",
+      "grn-sinsheim",
+      "salem-hd",
+      "pzn-wiesloch"
+    ]
+  },
+  {
+    "id": "grn-sinsheim",
+    "shortLabel": "GRN Sinsheim",
+    "name": "GRN-Klinik Sinsheim",
+    "standort": "Alte Waibstadter Straße 2, 74889 Sinsheim",
+    "telefon": "07261 66-0",
+    "uhrzeiten": "ZNA, Regionale Stroke Unit, HKL & Kreißsaal (ab 36+0 SSW): 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 2 (Erweiterte Notfallversorgung)",
+    "planungsebene": "Planungsebene 1 & 2 (Grund- & Schwerpunkt)",
+    "kategorie_filter": "Stufe 2 (Erweitert)",
+    "szenarien": [
+      "Stroke / Neuro",
+      "ACS / Reanimation",
+      "Abdomen / Gefäß",
+      "Kind / Geburt",
+      "Trauma / Schockraum"
+    ],
+    "spezielle_ressourcen": [
+      "Regionale Stroke Unit (Neurologie)",
+      "24/7 Herzkatheterlabor (CPU)",
+      "Lokales Traumazentrum, Geburtshilfe & NEF"
+    ],
+    "indikationen_rd": [
+      "Akuter Schlaganfall im südlichen RNK (Systemische Lyse)",
+      "ACS / STEMI / Internistische & chirurgische Notfälle im Kraichgau",
+      "Geburtshilfe (ab 36+0 SSW) & traumatologische Schwerpunktversorgung"
+    ],
+    "ausschluss_rd": "Schwerstes Polytrauma/SHT mit Neurochirurgie-Bedarf, Stroke zur Thrombektomie (Großgefäßverschluss), Frühgeburten < 36+0 SSW",
+    "verknuepfung_pfad": "Einzige Stufe-2-Klinik der GRN: Verlegt bei Thrombektomie-Indikation („Drip & Ship“) in die Kopfklinik HD (INF 400), bei schwerem Polytrauma ins ÜTZ (INF 420), PsychKHG → PZN Wiesloch.",
+    "linked_ids": [
+      "ukhd-kopf",
+      "ukhd-chir",
+      "ukhd-kind-frau",
+      "pzn-wiesloch"
+    ]
+  },
+  {
+    "id": "grn-schwetzingen",
+    "shortLabel": "GRN Schwetzingen",
+    "name": "GRN-Klinik Schwetzingen",
+    "standort": "Bodelschwinghstraße 10, 68723 Schwetzingen",
+    "telefon": "06202 84-30",
+    "uhrzeiten": "ZNA, 24/7 HKL & Kreißsaal (ab 36+0 SSW): 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 1 (Basisnotfallversorgung)",
+    "planungsebene": "Planungsebene 1 (Grund- & Regelversorgung)",
+    "kategorie_filter": "Stufe 1 (Basis)",
+    "szenarien": [
+      "ACS / Reanimation",
+      "Abdomen / Gefäß",
+      "Kind / Geburt",
+      "Stroke / Neuro"
+    ],
+    "spezielle_ressourcen": [
+      "24/7 Herzkatheterlabor (HKL)",
+      "Geburtshilfe / Kreißsaal (ab 36+0 SSW)",
+      "Lokales Traumazentrum & teleneurologische Anbindung"
+    ],
+    "indikationen_rd": [
+      "Internistische & chirurgische Regelnotfälle im westlichen RNK",
+      "ACS / Herzkatheter-Indikation",
+      "Normale Geburtshilfe & unfallchirurgische Basisversorgung"
+    ],
+    "ausschluss_rd": "Schweres Polytrauma, Neurochirurgie / Thrombektomie, Risikogeburten < 36+0 SSW, Pädiatrie",
+    "verknuepfung_pfad": "Versorgt den westlichen Kreis. Eskaliert bei Thrombektomie/Neurochirurgie → Kopfklinik HD (INF 400), bei Polytrauma → INF 420 (oder UMM Mannheim), bei PsychKHG → PZN Wiesloch.",
+    "linked_ids": [
+      "ukhd-kopf",
+      "ukhd-chir",
+      "ukhd-kind-frau",
+      "pzn-wiesloch"
+    ]
+  },
+  {
+    "id": "grn-weinheim",
+    "shortLabel": "GRN Weinheim",
+    "name": "GRN-Klinik Weinheim",
+    "standort": "Röntgenstraße 1, 69469 Weinheim",
+    "telefon": "06201 89-0",
+    "uhrzeiten": "ZNA, 24/7 HKL & Kreißsaal (ab 36+0 SSW): 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 1 (Basisnotfallversorgung)",
+    "planungsebene": "Planungsebene 1 (Grund- & Regelversorgung)",
+    "kategorie_filter": "Stufe 1 (Basis)",
+    "szenarien": [
+      "ACS / Reanimation",
+      "Abdomen / Gefäß",
+      "Kind / Geburt"
+    ],
+    "spezielle_ressourcen": [
+      "24/7 Herzkatheterlabor (HKL)",
+      "Geburtshilfe / Kreißsaal (ab 36+0 SSW)",
+      "Zertifiziertes Endoprothetik- & Gefäßzentrum"
+    ],
+    "indikationen_rd": [
+      "Internistische & chirurgische Regelnotfälle an der Bergstraße",
+      "ACS / Koronarintervention",
+      "Geburtshilfe (ab 36+0 SSW) & orthopädisch-unfallchirurgische Notfälle"
+    ],
+    "ausschluss_rd": "Überregionales Polytrauma, akuter schwerer Stroke (Thrombektomie), Pädiatrie, PsychKHG",
+    "verknuepfung_pfad": "Zentrum für den nördlichen RNK. Eskaliert bei Maximalversorger-Bedarf an das UKHD Heidelberg (INF 400/420) oder Mannheim; PsychKHG-Unterbringungen gehen ins PZN Wiesloch.",
+    "linked_ids": [
+      "ukhd-chir",
+      "ukhd-kopf",
+      "pzn-wiesloch"
+    ]
+  },
+  {
+    "id": "salem-hd",
+    "shortLabel": "Ev. KH Salem (Urologie HD)",
+    "name": "Ev. Krankenhaus Salem Heidelberg",
+    "standort": "Zeppelinstraße 11–33, 69121 Heidelberg",
+    "telefon": "06221 483-0",
+    "uhrzeiten": "ZNA & 24/7 Urologische Notfallversorgung (Kooperation UKHD)",
+    "notiz": "",
+    "gba_stufe": "Stufe 1 / Fachspezifische Versorgung",
+    "planungsebene": "Planungsebene 1 (Grundversorgung + Urologie)",
+    "kategorie_filter": "Spezial / Fachklinik",
+    "szenarien": [
+      "Urologie",
+      "Abdomen / Gefäß"
+    ],
+    "spezielle_ressourcen": [
+      "24/7 Urologische Notfälle (Kooperation UKHD)",
+      "Innere Medizin (Gastroenterologie)",
+      "Allgemein- & Viszeralchirurgie"
+    ],
+    "indikationen_rd": [
+      "Akute urologische Notfälle im Stadtgebiet HD (Hodentorsion, Harnverhalt, Kolik, Makrohämaturie)",
+      "Ausgewählte internistische & viszeralchirurgische Basisnotfälle"
+    ],
+    "ausschluss_rd": "Polytrauma, ACS / STEMI, akuter Stroke, Geburtshilfe, Pädiatrie",
+    "verknuepfung_pfad": "Bildet das urologische 24/7-Pendant zur GRN-Klinik Eberbach für das Heidelberger Stadtgebiet (ärztlich betrieben in Kooperation mit der Urologischen Uniklinik HD).",
+    "linked_ids": [
+      "grn-eberbach",
+      "ukhd-chir",
+      "st-josef"
+    ]
+  },
+  {
+    "id": "thorax-hd",
+    "shortLabel": "Thoraxklinik Rohrbach",
+    "name": "Thoraxklinik Heidelberg-Rohrbach (UKHD)",
+    "standort": "Röntgenstraße 1, 69126 Heidelberg",
+    "telefon": "06221 396-0",
+    "uhrzeiten": "Keine offene Primär-ZNA! Nur nach telefonischer Arzt-Arzt-Anmeldung (24/7 ICU)",
+    "notiz": "",
+    "gba_stufe": "Spezialklinik (Lungenfachklinik UKHD)",
+    "planungsebene": "Planungsebene 3 (Überregionales Lungenzentrum)",
+    "kategorie_filter": "Spezial / Fachklinik",
+    "szenarien": [
+      "Querschnitt / Spezial",
+      "ACS / Reanimation"
+    ],
+    "spezielle_ressourcen": [
+      "Thoraxchirurgie & Pneumologie (Maximalversorgung)",
+      "ECMO- / Weaning-Zentrum (VV-ECMO)",
+      "24/7 Bronchoskopie-Bereitschaft"
+    ],
+    "indikationen_rd": [
+      "Gezielter Sekundärtransport bei schwerem ARDS / Lungenversagen (VV-ECMO)",
+      "Spezifische thoraxchirurgische Notfälle / Hämoptysen nach Arzt-Arzt-Anmeldung"
+    ],
+    "ausschluss_rd": "Keine offene Primär-ZNA für unselektierte Rettungsdienst-Notfälle!",
+    "verknuepfung_pfad": "Spezialpartner der Intensivstationen (INF 410/420): Unklare akute Dyspnoe im RD fährt primär in die Innere (INF 410) oder St. Josef HD.",
+    "linked_ids": [
+      "ukhd-med",
+      "ukhd-chir",
+      "st-josef"
+    ]
+  },
+  {
+    "id": "bg-ludwigshafen",
+    "shortLabel": "BG Ludwigshafen (Verbrennung)",
+    "name": "BG Klinik Ludwigshafen (Externe Spezialressource)",
+    "standort": "Ludwig-Guttmann-Straße 13, 67071 Ludwigshafen",
+    "telefon": "0621 6810-0",
+    "uhrzeiten": "Schockraum, Schwerbrandverletztenzentrum & Replantation: 24/7",
+    "notiz": "",
+    "gba_stufe": "Stufe 3 (Umfassende Notfallversorgung & Spezialzentren)",
+    "planungsebene": "Planungsebene 3 (Überregionales Traumazentrum / BG)",
+    "kategorie_filter": "Spezial / Fachklinik",
+    "szenarien": [
+      "Trauma / Schockraum",
+      "Querschnitt / Spezial"
+    ],
+    "spezielle_ressourcen": [
+      "Schwerbrandverletztenzentrum",
+      "Replantationszentrum (Hand- & Plastische Chirurgie)",
+      "Überregionales Traumazentrum & RTH Christoph 5"
+    ],
+    "indikationen_rd": [
+      "Schwere Verbrennungen / Verbrühungen (Schwerbrandverletzte)",
+      "Amputationsverletzungen mit Replantationsoption / komplexe Handchirurgie",
+      "Schweres Polytrauma / Querschnittverletzungen"
+    ],
+    "ausschluss_rd": "Standard-Regelversorgung (Internistisch / Neurologisch / Pädiatrisch) aus dem Raum Heidelberg",
+    "verknuepfung_pfad": "Schließt die strukturelle Lücke in Heidelberg: Übernimmt primär oder sekundär alle Schwerbrandverletzten und Replantationsfälle aus dem Bereich HD & RNK.",
+    "linked_ids": [
+      "ukhd-chir",
+      "ukhd-schlierbach"
+    ]
+  },
+  {
+    "id": "pzn-wiesloch",
+    "shortLabel": "PZN Wiesloch (Psychiatrie RNK)",
+    "name": "PZN Wiesloch – Psychiatrisches Zentrum Nordbaden",
+    "standort": "Heidelberger Straße 1a, 69168 Wiesloch",
+    "telefon": "06222 55-0",
+    "uhrzeiten": "Akutpsychiatrische Pflichtaufnahme (Sektor Rhein-Neckar-Kreis): 24/7",
+    "notiz": "",
+    "gba_stufe": "24/7 Akutpsychiatrie (§ 1 Abs. 2 G-BA)",
+    "planungsebene": "Planungsebene 1 & 3 (Sektor-Pflichtversorgung RNK)",
+    "kategorie_filter": "Spezial / Fachklinik",
+    "szenarien": [
+      "Psychiatrie / Intox"
+    ],
+    "spezielle_ressourcen": [
+      "24/7 Akutpsychiatrie & Suchtmedizin für den gesamten RNK",
+      "Geschützte Aufnahmestationen nach PsychKHG BW",
+      "Gerontopsychiatrie"
+    ],
+    "indikationen_rd": [
+      "Akute Eigen-/Fremdgefährdung (PsychKHG) für den GESAMTEN RHEIN-NECKAR-KREIS (Eberbach, Sinsheim, Schwetzingen, Weinheim, Umland)",
+      "Schwere Psychosen, Manien, akute Sucht-/Entzugskrisen (somatisch stabil)"
+    ],
+    "ausschluss_rd": "Wohnort Stadtgebiet Heidelberg (→ ZPM Bergheim), somatisch überwachungspflichtige Intoxikation oder Begleittrauma",
+    "verknuepfung_pfad": "Sektor-Partner der GRN-Kliniken: Bei Mischintoxikation oder Verletzung im Landkreis erst Medical Clearing in der nächsten GRN-Klinik (Sinsheim, Schwetzingen, Weinheim, Eberbach) oder INF 410, danach Verlegung ins PZN.",
+    "linked_ids": [
+      "ukhd-zpm",
+      "grn-sinsheim",
+      "grn-schwetzingen",
+      "grn-weinheim",
+      "grn-eberbach"
+    ]
+  }
+]
+  </script>
+
+  <script>
+    const STORAGE_KEY = "rd_hd_rnk_clinics_editable_v3";
+    const GBA_CATEGORIES = ["Stufe 3 (Maximal)", "Stufe 2 (Erweitert)", "Stufe 1 (Basis)", "Spezial / Fachklinik"];
+    const SCENARIO_LIST = [
+      "Trauma / Schockraum", "ACS / Reanimation", "Stroke / Neuro",
+      "Kind / Geburt", "Abdomen / Gefäß", "Urologie",
+      "Psychiatrie / Intox", "Querschnitt / Spezial"
+    ];
+    const STARTING_POINTS = [
+  {
+    "id": "hd-hbf",
+    "label": "Heidelberg Zentrum / Hbf",
+    "area": "Stadt HD",
+    "coords": {
+      "lat": 49.4042,
+      "lng": 8.6758
+    }
+  },
+  {
+    "id": "hd-inf",
+    "label": "Heidelberg-Neuenheim (Campus INF)",
+    "area": "Stadt HD",
+    "coords": {
+      "lat": 49.4182,
+      "lng": 8.6705
+    }
+  },
+  {
+    "id": "hd-sued",
+    "label": "Heidelberg-Rohrbach / Kirchheim",
+    "area": "Stadt HD",
+    "coords": {
+      "lat": 49.3765,
+      "lng": 8.6712
+    }
+  },
+  {
+    "id": "weinheim",
+    "label": "Weinheim (Bergstraße)",
+    "area": "RNK Nord",
+    "coords": {
+      "lat": 49.5561,
+      "lng": 8.6697
+    }
+  },
+  {
+    "id": "ladenburg",
+    "label": "Ladenburg / Schriesheim",
+    "area": "RNK Nord",
+    "coords": {
+      "lat": 49.4718,
+      "lng": 8.6105
+    }
+  },
+  {
+    "id": "schwetzingen",
+    "label": "Schwetzingen / Plankstadt",
+    "area": "RNK West",
+    "coords": {
+      "lat": 49.3842,
+      "lng": 8.5714
+    }
+  },
+  {
+    "id": "hockenheim",
+    "label": "Hockenheim / Reilingen",
+    "area": "RNK West",
+    "coords": {
+      "lat": 49.3183,
+      "lng": 8.5478
+    }
+  },
+  {
+    "id": "wiesloch",
+    "label": "Wiesloch / Walldorf",
+    "area": "RNK Süd",
+    "coords": {
+      "lat": 49.2947,
+      "lng": 8.6981
+    }
+  },
+  {
+    "id": "leimen",
+    "label": "Leimen / Sandhausen",
+    "area": "RNK Mitte",
+    "coords": {
+      "lat": 49.3481,
+      "lng": 8.6911
+    }
+  },
+  {
+    "id": "sinsheim",
+    "label": "Sinsheim (Kraichgau)",
+    "area": "RNK Südost",
+    "coords": {
+      "lat": 49.2528,
+      "lng": 8.8786
+    }
+  },
+  {
+    "id": "neckargemuend",
+    "label": "Neckargemünd / Bammental",
+    "area": "Neckartal",
+    "coords": {
+      "lat": 49.3925,
+      "lng": 8.7975
+    }
+  },
+  {
+    "id": "schoenau",
+    "label": "Schönau / Wilhelmsfeld",
+    "area": "Odenwald",
+    "coords": {
+      "lat": 49.4361,
+      "lng": 8.8092
+    }
+  },
+  {
+    "id": "eberbach",
+    "label": "Eberbach (Odenwald)",
+    "area": "RNK Ost",
+    "coords": {
+      "lat": 49.4628,
+      "lng": 8.9861
+    }
+  }
+];
+    const CLINIC_COORDINATES = {
+  "ukhd-chir": {
+    "lat": 49.41559,
+    "lng": 8.66514
+  },
+  "ukhd-med": {
+    "lat": 49.41639,
+    "lng": 8.66672
+  },
+  "ukhd-kopf": {
+    "lat": 49.41782,
+    "lng": 8.66657
+  },
+  "ukhd-kind-frau": {
+    "lat": 49.41769,
+    "lng": 8.66212
+  },
+  "ukhd-schlierbach": {
+    "lat": 49.4102,
+    "lng": 8.77308
+  },
+  "ukhd-zpm": {
+    "lat": 49.40981,
+    "lng": 8.68875
+  },
+  "st-josef": {
+    "lat": 49.40257,
+    "lng": 8.68883
+  },
+  "grn-eberbach": {
+    "lat": 49.46334,
+    "lng": 8.99081
+  },
+  "grn-sinsheim": {
+    "lat": 49.2521,
+    "lng": 8.89109
+  },
+  "grn-schwetzingen": {
+    "lat": 49.37788,
+    "lng": 8.57043
+  },
+  "grn-weinheim": {
+    "lat": 49.54983,
+    "lng": 8.64484
+  },
+  "salem-hd": {
+    "lat": 49.4232,
+    "lng": 8.68465
+  },
+  "thorax-hd": {
+    "lat": 49.37785,
+    "lng": 8.69017
+  },
+  "bg-ludwigshafen": {
+    "lat": 49.48561,
+    "lng": 8.3887
+  },
+  "pzn-wiesloch": {
+    "lat": 49.30336,
+    "lng": 8.70087
+  }
+};
+    // Straßen-Matrix: [km, Minuten Normalfahrt ohne Verkehr] je Startpunkt -> Klinik
+    const ROUTE_MATRIX = {"hd-hbf":{"ukhd-chir":[2.1,5.6],"ukhd-med":[2.7,6.1],"ukhd-kopf":[2.6,5.1],"ukhd-kind-frau":[3.2,6.8],"ukhd-schlierbach":[8.3,14.2],"ukhd-zpm":[1.5,3.7],"st-josef":[1.9,4.9],"grn-eberbach":[32.2,43],"grn-sinsheim":[37.8,30.3],"grn-schwetzingen":[12.2,16.9],"grn-weinheim":[20.2,15.9],"salem-hd":[2.9,5.8],"thorax-hd":[3.5,6.6],"bg-ludwigshafen":[27.9,29.8],"pzn-wiesloch":[14.7,17.4]},"hd-inf":{"ukhd-chir":[1.4,4.1],"ukhd-med":[0.3,1.8],"ukhd-kopf":[0.3,1.4],"ukhd-kind-frau":[1.2,3.7],"ukhd-schlierbach":[10.4,17.8],"ukhd-zpm":[3.4,6.8],"st-josef":[4.5,10.3],"grn-eberbach":[34.4,46.5],"grn-sinsheim":[40.4,35.7],"grn-schwetzingen":[14.8,22.2],"grn-weinheim":[19.3,17.9],"salem-hd":[2.1,4.8],"thorax-hd":[6.1,12],"bg-ludwigshafen":[29.5,32.5],"pzn-wiesloch":[17.3,22.7]},"hd-sued":{"ukhd-chir":[5.8,13.2],"ukhd-med":[6.5,13.6],"ukhd-kopf":[6.3,12.6],"ukhd-kind-frau":[6.9,14.3],"ukhd-schlierbach":[11.5,20.8],"ukhd-zpm":[4.9,11],"st-josef":[4.2,10.3],"grn-eberbach":[37.6,49.8],"grn-sinsheim":[36.7,29.6],"grn-schwetzingen":[11.1,16.2],"grn-weinheim":[25.8,20.4],"salem-hd":[6.6,13.3],"thorax-hd":[1.9,5.7],"bg-ludwigshafen":[33.8,34.6],"pzn-wiesloch":[11.1,14.4]},"weinheim":{"ukhd-chir":[24.6,24.4],"ukhd-med":[22.4,24.1],"ukhd-kopf":[22.3,23.1],"ukhd-kind-frau":[22.9,24.8],"ukhd-schlierbach":[30.8,33],"ukhd-zpm":[23.8,22.1],"st-josef":[24.8,25.5],"grn-eberbach":[43.1,58],"grn-sinsheim":[56.2,41.9],"grn-schwetzingen":[33,26.4],"grn-weinheim":[2.4,4.9],"salem-hd":[21,21.1],"thorax-hd":[26.5,27.2],"bg-ludwigshafen":[36.6,30.3],"pzn-wiesloch":[36.7,32.3]},"ladenburg":{"ukhd-chir":[15.3,19.5],"ukhd-med":[13.1,19.2],"ukhd-kopf":[13,18.2],"ukhd-kind-frau":[13.6,19.9],"ukhd-schlierbach":[21.5,28.1],"ukhd-zpm":[14.5,17.1],"st-josef":[15.5,20.6],"grn-eberbach":[42.7,54.6],"grn-sinsheim":[46.9,37],"grn-schwetzingen":[21.7,23.8],"grn-weinheim":[12.6,12.3],"salem-hd":[11.7,16.2],"thorax-hd":[17.2,22.3],"bg-ludwigshafen":[23.7,32],"pzn-wiesloch":[27.4,27.4]},"schwetzingen":{"ukhd-chir":[13.3,19.5],"ukhd-med":[14,19.9],"ukhd-kopf":[13.8,19],"ukhd-kind-frau":[14.4,20.6],"ukhd-schlierbach":[19.1,27.9],"ukhd-zpm":[12.4,17.3],"st-josef":[12.4,17.7],"grn-eberbach":[45.4,56.2],"grn-sinsheim":[37.6,30.1],"grn-schwetzingen":[1.4,5.2],"grn-weinheim":[24.4,19.6],"salem-hd":[14.1,19.6],"thorax-hd":[12.2,15.5],"bg-ludwigshafen":[25.8,29.4],"pzn-wiesloch":[17.8,20.2]},"hockenheim":{"ukhd-chir":[22.5,24.7],"ukhd-med":[23.1,25.1],"ukhd-kopf":[23,24.2],"ukhd-kind-frau":[23.6,25.8],"ukhd-schlierbach":[28.3,33.1],"ukhd-zpm":[21.5,22.5],"st-josef":[21.6,22.9],"grn-eberbach":[62.2,56.4],"grn-sinsheim":[31.4,26.2],"grn-schwetzingen":[8.4,9.8],"grn-weinheim":[31.3,21.8],"salem-hd":[23.3,24.8],"thorax-hd":[21.3,20.7],"bg-ludwigshafen":[34.4,28.3],"pzn-wiesloch":[17.8,20.2]},"wiesloch":{"ukhd-chir":[17,24.7],"ukhd-med":[17.7,25.2],"ukhd-kopf":[17.5,24.2],"ukhd-kind-frau":[18.1,25.8],"ukhd-schlierbach":[21.7,31.9],"ukhd-zpm":[16,22.6],"st-josef":[15.1,22],"grn-eberbach":[50.6,50.2],"grn-sinsheim":[19.8,20],"grn-schwetzingen":[23.1,20.3],"grn-weinheim":[36.7,28.7],"salem-hd":[17.8,24.9],"thorax-hd":[12,15.9],"bg-ludwigshafen":[47.8,36.7],"pzn-wiesloch":[1.8,5.8]},"leimen":{"ukhd-chir":[8.8,17.6],"ukhd-med":[9.5,18],"ukhd-kopf":[9.3,17],"ukhd-kind-frau":[9.9,18.7],"ukhd-schlierbach":[14.1,24.7],"ukhd-zpm":[7.9,15.5],"st-josef":[6.8,14.2],"grn-eberbach":[34.3,44.4],"grn-sinsheim":[27.6,28.7],"grn-schwetzingen":[12.6,18.2],"grn-weinheim":[28.4,23],"salem-hd":[9.6,17.7],"thorax-hd":[3.7,8.1],"bg-ludwigshafen":[36.4,37.2],"pzn-wiesloch":[5.6,11.1]},"sinsheim":{"ukhd-chir":[37.3,31.6],"ukhd-med":[38,32.1],"ukhd-kopf":[37.8,31.1],"ukhd-kind-frau":[38.4,32.7],"ukhd-schlierbach":[23.9,31.5],"ukhd-zpm":[36.3,29.5],"st-josef":[36.4,29.9],"grn-eberbach":[32.2,36.1],"grn-sinsheim":[1,2.9],"grn-schwetzingen":[34,25.2],"grn-weinheim":[51.8,34],"salem-hd":[38.1,31.8],"thorax-hd":[29.1,26],"bg-ludwigshafen":[58.7,41.7],"pzn-wiesloch":[18.7,18.5]},"neckargemuend":{"ukhd-chir":[13.2,22.6],"ukhd-med":[13.8,23],"ukhd-kopf":[13.7,22.1],"ukhd-kind-frau":[14.3,23.7],"ukhd-schlierbach":[4.4,7.7],"ukhd-zpm":[11.1,18.2],"st-josef":[11.7,20.1],"grn-eberbach":[21.5,27.3],"grn-sinsheim":[21,28.3],"grn-schwetzingen":[25.9,33.9],"grn-weinheim":[31.4,32.7],"salem-hd":[12.2,20],"thorax-hd":[15.1,21.3],"bg-ludwigshafen":[39.1,46.7],"pzn-wiesloch":[18,25.7]},"schoenau":{"ukhd-chir":[21.9,33.4],"ukhd-med":[22.5,33.9],"ukhd-kopf":[22.4,32.9],"ukhd-kind-frau":[23,34.6],"ukhd-schlierbach":[13.6,19],"ukhd-zpm":[19.8,29.1],"st-josef":[20.4,30.9],"grn-eberbach":[21.6,26.8],"grn-sinsheim":[31,40.8],"grn-schwetzingen":[37.4,41.3],"grn-weinheim":[27.6,29],"salem-hd":[20.9,30.8],"thorax-hd":[25.1,33.8],"bg-ludwigshafen":[48.8,51.6],"pzn-wiesloch":[27.9,38.2]},"eberbach":{"ukhd-chir":[32.8,44.5],"ukhd-med":[33.4,44.9],"ukhd-kopf":[33.3,43.9],"ukhd-kind-frau":[33.9,45.6],"ukhd-schlierbach":[24.5,30],"ukhd-zpm":[30.7,40.1],"st-josef":[31.2,41.9],"grn-eberbach":[1.2,4.1],"grn-sinsheim":[32.3,37.9],"grn-schwetzingen":[64.9,56.9],"grn-weinheim":[48.9,53.7],"salem-hd":[31.8,41.8],"thorax-hd":[35.9,44.8],"bg-ludwigshafen":[58.7,68.5],"pzn-wiesloch":[38.8,49.2]},"clinic:ukhd-chir":{"ukhd-chir":[0,0],"ukhd-med":[1.3,4.1],"ukhd-kopf":[1.2,3.1],"ukhd-kind-frau":[0.4,1.3],"ukhd-schlierbach":[9.7,17.4],"ukhd-zpm":[2.7,6.5],"st-josef":[3.8,9.9],"grn-eberbach":[33.7,46.2],"grn-sinsheim":[39.7,35.4],"grn-schwetzingen":[14.1,21.9],"grn-weinheim":[21.2,18.2],"salem-hd":[2.8,5.8],"thorax-hd":[5.5,11.6],"bg-ludwigshafen":[28.8,32.1],"pzn-wiesloch":[16.6,22.4]},"clinic:ukhd-med":{"ukhd-chir":[1.3,4],"ukhd-med":[0,0],"ukhd-kopf":[0.2,1.3],"ukhd-kind-frau":[1.1,3.6],"ukhd-schlierbach":[10.3,17.7],"ukhd-zpm":[3.3,6.7],"st-josef":[4.4,10.2],"grn-eberbach":[34.3,46.4],"grn-sinsheim":[40.3,35.6],"grn-schwetzingen":[14.7,22.1],"grn-weinheim":[19.2,17.8],"salem-hd":[2,4.7],"thorax-hd":[6.1,11.9],"bg-ludwigshafen":[29.4,32.4],"pzn-wiesloch":[17.2,22.6]},"clinic:ukhd-kopf":{"ukhd-chir":[1.2,3.2],"ukhd-med":[0.2,1.3],"ukhd-kopf":[0,0],"ukhd-kind-frau":[0.9,2.8],"ukhd-schlierbach":[10.2,16.8],"ukhd-zpm":[3.2,5.9],"st-josef":[4.3,9.4],"grn-eberbach":[34.2,45.6],"grn-sinsheim":[40.2,34.8],"grn-schwetzingen":[14.6,21.3],"grn-weinheim":[19.1,17],"salem-hd":[1.9,3.8],"thorax-hd":[5.9,11.1],"bg-ludwigshafen":[29.3,31.6],"pzn-wiesloch":[17.1,21.8]},"clinic:ukhd-kind-frau":{"ukhd-chir":[0.4,1.3],"ukhd-med":[1.1,3.6],"ukhd-kopf":[0.9,2.6],"ukhd-kind-frau":[0,0],"ukhd-schlierbach":[10.8,18.3],"ukhd-zpm":[3.8,7.4],"st-josef":[4.9,10.9],"grn-eberbach":[34.8,47.1],"grn-sinsheim":[40.8,36.3],"grn-schwetzingen":[15.2,22.8],"grn-weinheim":[19.7,18.5],"salem-hd":[2.5,5.3],"thorax-hd":[6.5,12.6],"bg-ludwigshafen":[29.9,33.1],"pzn-wiesloch":[17.7,23.3]},"clinic:ukhd-schlierbach":{"ukhd-chir":[9.5,17.6],"ukhd-med":[10.1,18],"ukhd-kopf":[10,17],"ukhd-kind-frau":[10.6,18.7],"ukhd-schlierbach":[0,0],"ukhd-zpm":[7.4,13.2],"st-josef":[7.9,15],"grn-eberbach":[24.6,31.2],"grn-sinsheim":[24.8,33.1],"grn-schwetzingen":[20,31.2],"grn-weinheim":[27.7,27.6],"salem-hd":[8.5,14.9],"thorax-hd":[10.9,19.6],"bg-ludwigshafen":[35.3,41.6],"pzn-wiesloch":[21.8,30.6]},"clinic:ukhd-zpm":{"ukhd-chir":[2.5,6.2],"ukhd-med":[3.2,6.7],"ukhd-kopf":[3,5.7],"ukhd-kind-frau":[3.6,7.4],"ukhd-schlierbach":[7.4,12.5],"ukhd-zpm":[0,0],"st-josef":[2,5.6],"grn-eberbach":[31.4,41.2],"grn-sinsheim":[42.4,33.6],"grn-schwetzingen":[13.3,20.2],"grn-weinheim":[20.7,16.3],"salem-hd":[3.3,6.4],"thorax-hd":[4.9,10.1],"bg-ludwigshafen":[28.4,30.3],"pzn-wiesloch":[15.8,20.6]},"clinic:st-josef":{"ukhd-chir":[3.2,9.7],"ukhd-med":[3.9,10.2],"ukhd-kopf":[3.7,9.2],"ukhd-kind-frau":[4.3,10.9],"ukhd-schlierbach":[7.8,14.7],"ukhd-zpm":[1.5,5.8],"st-josef":[0,0],"grn-eberbach":[31.8,43.5],"grn-sinsheim":[38.8,34.1],"grn-schwetzingen":[13.2,20.6],"grn-weinheim":[21.3,20],"salem-hd":[3.1,8.3],"thorax-hd":[3.4,8.7],"bg-ludwigshafen":[29,33.9],"pzn-wiesloch":[14.1,20.1]},"clinic:grn-eberbach":{"ukhd-chir":[33,46.1],"ukhd-med":[33.7,46.6],"ukhd-kopf":[33.5,45.6],"ukhd-kind-frau":[34.1,47.3],"ukhd-schlierbach":[24.7,31.7],"ukhd-zpm":[30.9,41.7],"st-josef":[31.5,43.6],"grn-eberbach":[0,0],"grn-sinsheim":[33.2,40.2],"grn-schwetzingen":[46.9,59.1],"grn-weinheim":[49.2,55.4],"salem-hd":[32,43.5],"thorax-hd":[36.2,46.5],"bg-ludwigshafen":[58.9,70.2],"pzn-wiesloch":[39,50.9]},"clinic:grn-sinsheim":{"ukhd-chir":[38.3,34.2],"ukhd-med":[38.9,34.7],"ukhd-kopf":[38.8,33.7],"ukhd-kind-frau":[39.4,35.4],"ukhd-schlierbach":[24.8,34.2],"ukhd-zpm":[37.3,32.1],"st-josef":[37.4,32.5],"grn-eberbach":[33.1,38.6],"grn-sinsheim":[0,0],"grn-schwetzingen":[35,27.9],"grn-weinheim":[52.8,36.6],"salem-hd":[39.1,34.4],"thorax-hd":[30.1,28.7],"bg-ludwigshafen":[59.7,44.3],"pzn-wiesloch":[19.7,21.1]},"clinic:grn-schwetzingen":{"ukhd-chir":[13.5,20.9],"ukhd-med":[14.1,21.4],"ukhd-kopf":[14,20.4],"ukhd-kind-frau":[14.6,22.1],"ukhd-schlierbach":[19.3,29.4],"ukhd-zpm":[12.5,18.8],"st-josef":[12.6,19.2],"grn-eberbach":[45.6,57.7],"grn-sinsheim":[35.6,28.7],"grn-schwetzingen":[0,0],"grn-weinheim":[29.1,21.5],"salem-hd":[14.3,21.1],"thorax-hd":[12.4,17],"bg-ludwigshafen":[37.6,30.1],"pzn-wiesloch":[17.5,20.9]},"clinic:grn-weinheim":{"ukhd-chir":[22.6,20.8],"ukhd-med":[20.4,20.5],"ukhd-kopf":[20.3,19.5],"ukhd-kind-frau":[20.9,21.2],"ukhd-schlierbach":[28.8,29.4],"ukhd-zpm":[21.8,18.5],"st-josef":[22.8,21.9],"grn-eberbach":[50.3,56.5],"grn-sinsheim":[54.2,38.3],"grn-schwetzingen":[30.9,22.8],"grn-weinheim":[0,0],"salem-hd":[19,17.5],"thorax-hd":[24.5,23.6],"bg-ludwigshafen":[34.6,26.6],"pzn-wiesloch":[34.7,28.7]},"clinic:salem-hd":{"ukhd-chir":[2.9,5.9],"ukhd-med":[2.1,4.9],"ukhd-kopf":[2,3.9],"ukhd-kind-frau":[2.6,5.6],"ukhd-schlierbach":[8.7,15.1],"ukhd-zpm":[2.3,5.2],"st-josef":[3.1,7.8],"grn-eberbach":[32.7,43.8],"grn-sinsheim":[40.7,35.7],"grn-schwetzingen":[15,22.2],"grn-weinheim":[17.8,14.8],"salem-hd":[0,0],"thorax-hd":[6.4,12],"bg-ludwigshafen":[29.8,32.5],"pzn-wiesloch":[17.6,22.7]},"clinic:thorax-hd":{"ukhd-chir":[5.5,11.3],"ukhd-med":[6.1,11.8],"ukhd-kopf":[6,10.8],"ukhd-kind-frau":[6.6,12.5],"ukhd-schlierbach":[10.7,18.4],"ukhd-zpm":[4.5,9.3],"st-josef":[3.4,7.9],"grn-eberbach":[36.1,46.3],"grn-sinsheim":[31,29.9],"grn-schwetzingen":[12.4,17],"grn-weinheim":[27.1,21.2],"salem-hd":[6.3,11.5],"thorax-hd":[0,0],"bg-ludwigshafen":[35.1,35.4],"pzn-wiesloch":[11.1,13.6]},"clinic:bg-ludwigshafen":{"ukhd-chir":[27.6,33.4],"ukhd-med":[28.2,33.8],"ukhd-kopf":[28.1,32.9],"ukhd-kind-frau":[28.7,34.5],"ukhd-schlierbach":[33.8,42],"ukhd-zpm":[26.8,31],"st-josef":[27.8,34.5],"grn-eberbach":[57.8,70.7],"grn-sinsheim":[60,45],"grn-schwetzingen":[37.6,30.2],"grn-weinheim":[33.5,26.9],"salem-hd":[28.4,33.5],"thorax-hd":[29.5,36.2],"bg-ludwigshafen":[0,0],"pzn-wiesloch":[48.6,39.3]},"clinic:pzn-wiesloch":{"ukhd-chir":[16.1,21.8],"ukhd-med":[16.8,22.2],"ukhd-kopf":[16.6,21.3],"ukhd-kind-frau":[17.2,22.9],"ukhd-schlierbach":[21.5,29.5],"ukhd-zpm":[15.2,19.6],"st-josef":[14.2,19],"grn-eberbach":[38,50.6],"grn-sinsheim":[21,22.3],"grn-schwetzingen":[17.8,20.3],"grn-weinheim":[33.5,26.4],"salem-hd":[17,21.9],"thorax-hd":[11.2,12.9],"bg-ludwigshafen":[48.9,39],"pzn-wiesloch":[0,0]}};
+    const ROUTE_CLINIC_ADDR = {
+  "ukhd-chir": "Im Neuenheimer Feld 420, 69120 Heidelberg",
+  "ukhd-med": "Im Neuenheimer Feld 410, 69120 Heidelberg",
+  "ukhd-kopf": "Im Neuenheimer Feld 400, 69120 Heidelberg",
+  "ukhd-kind-frau": "Im Neuenheimer Feld 430, 69120 Heidelberg",
+  "ukhd-schlierbach": "Schlierbacher Landstraße 200a, 69118 Heidelberg",
+  "ukhd-zpm": "Voßstraße 2, 69115 Heidelberg",
+  "st-josef": "Landhausstraße 25, 69115 Heidelberg",
+  "grn-eberbach": "Scheuerbergstraße 3, 69412 Eberbach",
+  "grn-sinsheim": "Alte Waibstadter Straße 2, 74889 Sinsheim",
+  "grn-schwetzingen": "Bodelschwinghstraße 10, 68723 Schwetzingen",
+  "grn-weinheim": "Röntgenstraße 1, 69469 Weinheim",
+  "salem-hd": "Zeppelinstraße 11–33, 69121 Heidelberg",
+  "thorax-hd": "Röntgenstraße 1, 69126 Heidelberg",
+  "bg-ludwigshafen": "Ludwig-Guttmann-Straße 13, 67071 Ludwigshafen",
+  "pzn-wiesloch": "Heidelberger Straße 1a, 69168 Wiesloch"
+};
+    const ROUTE_INFO = {"stand":"23.10.2026","quelle":"OpenStreetMap / OSRM"};
+    const SOSI_FACTOR = 0.8;
+    const SYNC_CONFIG = {"dataUrl":"https://raw.githubusercontent.com/strikefarron/zielklinik-daten/main/daten.enc.json","appUrl":"https://raw.githubusercontent.com/strikefarron/zielklinik-daten/main/app.json","repoUrl":"https://github.com/strikefarron/zielklinik-daten","webUrl":"https://strikefarron.github.io/zielklinik-daten/"};
+
+    let HOSPITALS_DATA = [];
+    let activeGbaFilter = "ALL";
+    let activeScenarioFilter = "Alle Szenarien";
+    let rawSearchQuery = "";
+    let expandedClinicIds = new Set();
+    let allDetailsExpanded = false;
+    let selectedStartId = "hd-hbf";
+    let customGpsCoords = null;
+    let gpsRoutes = null;
+    let sortByTravelTime = false;
+
+    function toRad(deg) { return (deg * Math.PI) / 180; }
+
+    function calcAirDistKm(from, to) {
+      const dLat = toRad(to.lat - from.lat);
+      const dLng = toRad(to.lng - from.lng);
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(from.lat)) * Math.cos(toRad(to.lat)) * Math.sin(dLng / 2) ** 2;
+      return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function calculateTravelEstimate(from, to) {
+      const airKm = calcAirDistKm(from, to);
+      const roadKm = Math.max(0.5, Number((airKm * 1.33).toFixed(1)));
+      if (airKm < 0.2) return { airDistanceKm: 0.1, roadDistanceKm: 0.2, normalMinutes: 2, sosiMinutes: 1 };
+      const avgNormal = roadKm < 6 ? 32 : roadKm < 18 ? 48 : 62;
+      const avgSosi = roadKm < 6 ? 45 : roadKm < 18 ? 66 : 82;
+      const normalMinutes = Math.max(2, Math.round((roadKm / avgNormal) * 60 + 2));
+      const sosiMinutes = Math.max(1, Math.round((roadKm / avgSosi) * 60 + 1));
+      return {
+        airDistanceKm: Number(airKm.toFixed(1)),
+        roadDistanceKm: roadKm,
+        normalMinutes,
+        sosiMinutes: Math.min(sosiMinutes, normalMinutes)
+      };
+    }
+
+    function getClinicCoords(clinicId, standort) {
+      if (CLINIC_COORDINATES[clinicId]) return CLINIC_COORDINATES[clinicId];
+      const s = (standort || "").toLowerCase();
+      if (s.includes("sinsheim")) return CLINIC_COORDINATES["grn-sinsheim"];
+      if (s.includes("eberbach")) return CLINIC_COORDINATES["grn-eberbach"];
+      if (s.includes("weinheim")) return CLINIC_COORDINATES["grn-weinheim"];
+      if (s.includes("schwetzingen")) return CLINIC_COORDINATES["grn-schwetzingen"];
+      if (s.includes("wiesloch")) return CLINIC_COORDINATES["pzn-wiesloch"];
+      if (s.includes("ludwigshafen")) return CLINIC_COORDINATES["bg-ludwigshafen"];
+      return { lat: 49.418, lng: 8.67 };
+    }
+
+    function getCurrentStartCoords() {
+      if (selectedStartId === "gps" && customGpsCoords) return customGpsCoords;
+      if (selectedStartId.startsWith("clinic:")) {
+        const cId = selectedStartId.replace("clinic:", "");
+        const cObj = HOSPITALS_DATA.find(c => c.id === cId);
+        return getClinicCoords(cId, cObj ? cObj.standort : "");
+      }
+      const found = STARTING_POINTS.find(p => p.id === selectedStartId);
+      return found ? found.coords : STARTING_POINTS[0].coords;
+    }
+
+    // ---------- Straßenrouting ----------
+    function routeIsValidFor(clinic) {
+      return !!(clinic && ROUTE_CLINIC_ADDR[clinic.id] && CLINIC_COORDINATES[clinic.id] &&
+        ROUTE_CLINIC_ADDR[clinic.id] === (clinic.standort || "").trim());
+    }
+
+    function fromRoute(km, min, airKm, source) {
+      const normal = Math.max(1, Math.round(min));
+      const sosi = Math.max(1, Math.min(normal, Math.round(min * SOSI_FACTOR)));
+      return { airDistanceKm: Number(airKm.toFixed(1)), roadDistanceKm: km, normalMinutes: normal, sosiMinutes: sosi, source: source };
+    }
+
+    function getTravelForClinic(clinic) {
+      const startCoords = getCurrentStartCoords();
+      const dest = getClinicCoords(clinic.id, clinic.standort);
+      const airKm = calcAirDistKm(startCoords, dest);
+      if (routeIsValidFor(clinic)) {
+        if (selectedStartId === "gps") {
+          if (gpsRoutes && gpsRoutes.status === "ok" && gpsRoutes.data[clinic.id]) {
+            const r = gpsRoutes.data[clinic.id];
+            return fromRoute(r[0], r[1], airKm, "live");
+          }
+        } else {
+          let row = ROUTE_MATRIX[selectedStartId] || null;
+          if (row && selectedStartId.indexOf("clinic:") === 0) {
+            const sc = HOSPITALS_DATA.find(c => "clinic:" + c.id === selectedStartId);
+            if (!routeIsValidFor(sc)) row = null;
+          }
+          if (row && row[clinic.id]) return fromRoute(row[clinic.id][0], row[clinic.id][1], airKm, "route");
+        }
+      }
+      const est = calculateTravelEstimate(startCoords, dest);
+      est.source = (selectedStartId === "gps" && gpsRoutes && gpsRoutes.status === "loading") ? "loading" : "estimate";
+      return est;
+    }
+
+    function isRouted(est) {
+      return est && (est.source === "route" || est.source === "live");
+    }
+
+    function travelSourceText(est) {
+      const sosiPct = Math.round((1 - SOSI_FACTOR) * 100);
+      if (est.source === "route") return "🛣️ Straßenrouting ab Startpunkt (" + ROUTE_INFO.quelle + ", Stand " + ROUTE_INFO.stand + ") • ohne Verkehr/Baustellen • SoSi = Faustwert −" + sosiPct + " %";
+      if (est.source === "live") return "🛰️ Live-Routing ab GPS-Standort (" + ROUTE_INFO.quelle + ") • ohne Verkehr/Baustellen • SoSi = Faustwert −" + sosiPct + " %";
+      if (est.source === "loading") return "⏳ Route ab GPS-Standort wird berechnet … (vorläufig nur Schätzung)";
+      if (selectedStartId === "gps") return "⚠️ Nur Schätzung (Luftlinie × 1,33): Für die Live-Route ist Internet nötig.";
+      return "⚠️ Nur Schätzung (Luftlinie × 1,33): Für diese Klinik/Adresse liegen keine Straßendaten vor.";
+    }
+
+    function fetchGpsRoutes(lat, lng) {
+      const key = lat.toFixed(5) + "," + lng.toFixed(5);
+      const targets = HOSPITALS_DATA.filter(routeIsValidFor);
+      if (!targets.length || typeof fetch === "undefined") { gpsRoutes = { key: key, status: "error", data: {} }; return; }
+      gpsRoutes = { key: key, status: "loading", data: {} };
+      let coords = lng.toFixed(6) + "," + lat.toFixed(6);
+      targets.forEach(function(c) {
+        const pt = CLINIC_COORDINATES[c.id];
+        coords += ";" + pt.lng.toFixed(6) + "," + pt.lat.toFixed(6);
+      });
+      const dests = targets.map(function(c, i) { return i + 1; }).join(";");
+      const path = "/table/v1/driving/" + coords + "?sources=0&destinations=" + dests + "&annotations=duration,distance";
+      const servers = ["https://routing.openstreetmap.de/routed-car", "https://router.project-osrm.org"];
+
+      function attempt(i) {
+        if (!gpsRoutes || gpsRoutes.key !== key) return;
+        if (i >= servers.length) {
+          gpsRoutes.status = "error";
+          rerenderTravel();
+          showToast("📶 Live-Route nicht verfügbar – zeige Schätzung (Luftlinie).");
+          return;
+        }
+        const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const timer = setTimeout(function() { if (ctrl) ctrl.abort(); }, 8000);
+        fetch(servers[i] + path, ctrl ? { signal: ctrl.signal } : {})
+          .then(function(r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+          .then(function(j) {
+            clearTimeout(timer);
+            if (!j || j.code !== "Ok" || !j.distances || !j.durations) throw new Error("Antwort ungültig");
+            if (!gpsRoutes || gpsRoutes.key !== key) return;
+            const data = {};
+            targets.forEach(function(c, idx) {
+              const d = j.distances[0][idx];
+              const t = j.durations[0][idx];
+              if (d !== null && d !== undefined && t !== null && t !== undefined) {
+                data[c.id] = [Math.round(d / 100) / 10, Math.round(t / 6) / 10];
+              }
+            });
+            gpsRoutes.status = "ok";
+            gpsRoutes.data = data;
+            rerenderTravel();
+          })
+          .catch(function() { clearTimeout(timer); attempt(i + 1); });
+      }
+      attempt(0);
+    }
+
+    function rerenderTravel() {
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+    }
+
+    // Normalisierung für tolerante Suche
+    function normalizeStr(str) {
+      if (!str) return "";
+      return String(str)
+        .toLowerCase()
+        .replace(/ä/g, "ae")
+        .replace(/ö/g, "oe")
+        .replace(/ü/g, "ue")
+        .replace(/ß/g, "ss")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function levenshtein(a, b) {
+      if (a === b) return 0;
+      if (!a.length) return b.length;
+      if (!b.length) return a.length;
+      const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+      for (let i = 1; i <= a.length; i++) {
+        let prev = i;
+        for (let j = 1; j <= b.length; j++) {
+          const val = a[i - 1] === b[j - 1] ? row[j - 1] : Math.min(row[j - 1], prev, row[j]) + 1;
+          row[j - 1] = prev;
+          prev = val;
+        }
+        row[b.length] = prev;
+      }
+      return row[b.length];
+    }
+
+    function tokenMatchesWord(token, word) {
+      if (!token || !word) return false;
+      if (word.includes(token)) return true;
+      if (token.includes(word) && word.length >= 3) return true;
+      if (word.startsWith(token)) return true;
+      const maxDist = token.length <= 2 ? 0 : (token.length <= 4 ? 1 : (token.length <= 7 ? 1 : 2));
+      if (Math.abs(token.length - word.length) <= maxDist) {
+        if (levenshtein(token, word) <= maxDist) return true;
+      }
+      return false;
+    }
+
+    function tokenMatchesTarget(token, target) {
+      const norm = normalizeStr(target);
+      if (!norm || !token) return false;
+      if (norm.includes(token)) return true;
+      const words = norm.split(/\s+/);
+      for (const w of words) {
+        if (tokenMatchesWord(token, w)) return true;
+      }
+      return false;
+    }
+
+    function highlightSearch(text, rawQuery) {
+      if (!text || !rawQuery || !rawQuery.trim()) return escapeHtml(text);
+      const rawTokens = rawQuery.trim().split(/\s+/).filter(Boolean);
+      if (!rawTokens.length) return escapeHtml(text);
+
+      const ranges = [];
+      rawTokens.forEach(t => {
+        const esc = t.replace(/[.*+?^\$\{\}()|[\]\\]/g, "\\$&");
+        const re = new RegExp(esc, "gi");
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          ranges.push([m.index, m.index + m[0].length]);
+        }
+      });
+
+      const wordRe = /[\wÀ-ž]+/g;
+      let wm;
+      while ((wm = wordRe.exec(text)) !== null) {
+        const word = wm[0];
+        const normWord = normalizeStr(word);
+        const start = wm.index;
+        const end = start + word.length;
+        for (const rt of rawTokens) {
+          const normToken = normalizeStr(rt);
+          if (tokenMatchesWord(normToken, normWord)) {
+            ranges.push([start, end]);
+            break;
+          }
+        }
+      }
+
+      if (!ranges.length) return escapeHtml(text);
+
+      ranges.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const merged = [];
+      let cur = ranges[0];
+      for (let i = 1; i < ranges.length; i++) {
+        if (ranges[i][0] <= cur[1]) cur[1] = Math.max(cur[1], ranges[i][1]);
+        else { merged.push(cur); cur = ranges[i]; }
+      }
+      merged.push(cur);
+
+      let result = "";
+      let last = 0;
+      for (const [st, en] of merged) {
+        if (st > last) result += escapeHtml(text.slice(last, st));
+        result += '<mark class="search-highlight">' + escapeHtml(text.slice(st, en)) + '</mark>';
+        last = en;
+      }
+      if (last < text.length) result += escapeHtml(text.slice(last));
+      return result;
+    }
+
+    function hasNative() {
+      return typeof window.AndroidBridge !== "undefined" && window.AndroidBridge !== null;
+    }
+
+    function openRouteDirect(standort, clinicName) {
+      const clean = (standort || "").trim();
+      if (!clean) return;
+      const name = clinicName || "";
+
+      // In der Android-App: Route direkt über die native App öffnen
+      if (hasNative()) {
+        try { window.AndroidBridge.openRoute(clean, name); return; } catch (e) {}
+      }
+
+      const ua = navigator.userAgent || "";
+      const isAndroid = /Android/i.test(ua);
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+      const webUrl = "https://maps.google.com/maps?daddr=" + encodeURIComponent(clean);
+
+      if (isAndroid) {
+        // Android-Browser: geo:-Link versuchen, Web-Karte nur wenn die Seite sichtbar bleibt
+        const geoUri = "geo:0,0?q=" + encodeURIComponent(clean + (name ? " (" + name + ")" : ""));
+        let left = false;
+        const onVis = function() { if (document.hidden) left = true; };
+        document.addEventListener("visibilitychange", onVis);
+        window.location.href = geoUri;
+        setTimeout(function() {
+          document.removeEventListener("visibilitychange", onVis);
+          if (!left && !document.hidden) window.open(webUrl, "_blank");
+        }, 1500);
+      } else if (isIOS) {
+        window.location.href = "https://maps.apple.com/?daddr=" + encodeURIComponent(clean) + "&dirflg=d";
+      } else {
+        window.open(webUrl, "_blank");
+      }
+    }
+
+    function copyAddressDirect(standort, event) {
+      if (event) event.stopPropagation();
+      const clean = (standort || "").trim();
+      if (!clean) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(clean).then(() => showToast("✓ Adresse kopiert!"));
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = clean;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showToast("✓ Adresse kopiert!");
+      }
+    }
+
+    function loadInitialData() {
+      const bakedJson = document.getElementById("baked-clinics-data").textContent;
+      const bakedArray = JSON.parse(bakedJson);
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          HOSPITALS_DATA = JSON.parse(saved);
+          document.getElementById("customDataBadge").style.display = "inline-block";
+          return;
+        }
+      } catch (e) {
+        console.warn("localStorage nicht verfügbar, nutze eingebettete Daten.");
+      }
+      HOSPITALS_DATA = bakedArray;
+    }
+
+    function persistData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(HOSPITALS_DATA));
+        document.getElementById("customDataBadge").style.display = "inline-block";
+      } catch (e) {
+        console.warn("Speichern in localStorage fehlgeschlagen.");
+      }
+    }
+
+    function showToast(text) {
+      const t = document.getElementById("toastMsg");
+      t.textContent = text;
+      t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, 2400);
+    }
+
+    // =====================================================================
+    // TEAM-SYNC (verschlüsselte Klinikdaten aus GitHub)
+    // =====================================================================
+    const SYNC_META_KEY = "rd_hd_rnk_sync_v1";
+    const SYNC_UNDO_KEY = "rd_hd_rnk_before_sync_v1";
+    const SYNC_FORMAT = "zkm-sync-1";
+    const SYNC_ITER = 310000;
+    let syncBusy = false;
+
+    function getSyncMeta() {
+      try { return JSON.parse(localStorage.getItem(SYNC_META_KEY) || "{}") || {}; } catch (e) { return {}; }
+    }
+    function setSyncMeta(m) {
+      try { localStorage.setItem(SYNC_META_KEY, JSON.stringify(m)); } catch (e) {}
+    }
+    function b64e(buf) {
+      const b = new Uint8Array(buf); let s = "";
+      for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
+      return btoa(s);
+    }
+    function b64d(str) {
+      const s = atob(str); const b = new Uint8Array(s.length);
+      for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i);
+      return b;
+    }
+    function syncCryptoAvailable() {
+      return typeof crypto !== "undefined" && crypto.subtle && typeof TextEncoder !== "undefined";
+    }
+    async function deriveSyncKey(password, salt, iter) {
+      const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: iter, hash: "SHA-256" },
+        base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    }
+    function syncHeader(version, stand) {
+      return JSON.stringify({ format: SYNC_FORMAT, version: version, stand: stand });
+    }
+    async function encryptSyncFile(password, clinics, version, stand) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveSyncKey(password, salt, SYNC_ITER);
+      const plain = new TextEncoder().encode(JSON.stringify({ version: version, stand: stand, clinics: clinics }));
+      const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv, additionalData: new TextEncoder().encode(syncHeader(version, stand)) }, key, plain);
+      return { format: SYNC_FORMAT, version: version, stand: stand,
+        kdf: { name: "PBKDF2-SHA256", iter: SYNC_ITER, salt: b64e(salt) }, iv: b64e(iv), ct: b64e(ct) };
+    }
+    async function decryptSyncFile(password, file) {
+      if (!file || file.format !== SYNC_FORMAT || !file.kdf || !file.iv || !file.ct) throw new Error("format");
+      const key = await deriveSyncKey(password, b64d(file.kdf.salt), file.kdf.iter || SYNC_ITER);
+      let plain;
+      try {
+        plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64d(file.iv), additionalData: new TextEncoder().encode(syncHeader(file.version, file.stand)) }, key, b64d(file.ct));
+      } catch (e) { throw new Error("passwort"); }
+      const payload = JSON.parse(new TextDecoder().decode(plain));
+      if (payload.version !== file.version) throw new Error("format");
+      if (!validClinicList(payload.clinics)) throw new Error("inhalt");
+      return payload;
+    }
+    function validClinicList(list) {
+      if (!Array.isArray(list) || list.length === 0 || list.length > 500) return false;
+      const ids = {};
+      for (let i = 0; i < list.length; i++) {
+        const c = list[i];
+        if (!c || typeof c.id !== "string" || !c.id || typeof c.name !== "string" || !c.name) return false;
+        if (ids[c.id]) return false;
+        ids[c.id] = true;
+      }
+      return true;
+    }
+    function fetchJsonNoCache(url) {
+      const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      const timer = setTimeout(function() { if (ctrl) ctrl.abort(); }, 10000);
+      return fetch(url + (url.indexOf("?") === -1 ? "?" : "&") + "t=" + Date.now(), Object.assign({ cache: "no-store" }, ctrl ? { signal: ctrl.signal } : {}))
+        .then(function(r) { clearTimeout(timer); if (!r.ok) throw new Error("http" + r.status); return r.json(); })
+        .catch(function(e) { clearTimeout(timer); throw e; });
+    }
+    function applySyncedClinics(payload) {
+      try { localStorage.setItem(SYNC_UNDO_KEY, JSON.stringify(HOSPITALS_DATA)); } catch (e) {}
+      const merged = payload.clinics.map(function(c) {
+        const local = HOSPITALS_DATA.find(function(h) { return h.id === c.id; });
+        const copy = Object.assign({}, c);
+        if (local && local.notiz && String(local.notiz).trim()) copy.notiz = local.notiz;
+        return copy;
+      });
+      HOSPITALS_DATA = merged;
+      persistData();
+      document.getElementById("customDataBadge").style.display = "none";
+      const m = getSyncMeta();
+      m.version = payload.version; m.stand = payload.stand; m.lastOk = new Date().toISOString(); m.lastError = "";
+      setSyncMeta(m);
+      renderFilterPills();
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+      updateSyncBadge();
+    }
+    function syncErrorText(e) {
+      const msg = (e && e.message) || "";
+      if (msg === "passwort") return "Passwort falsch (oder Sync-Datei verändert) – Daten nicht übernommen.";
+      if (msg === "format" || msg === "inhalt") return "Die Sync-Datei ist beschädigt oder ungültig – bisherige Daten bleiben.";
+      if (msg === "http404") return "Noch keine Sync-Datei im Repository vorhanden.";
+      if (msg === "krypto") return "Verschlüsselung wird in diesem Browser nicht unterstützt.";
+      return "Keine Verbindung – es gilt der zuletzt geladene Stand.";
+    }
+    async function runSync(manual, passwordOverride) {
+      if (syncBusy) return;
+      const meta = getSyncMeta();
+      const pw = passwordOverride || meta.pw;
+      if (!pw) { if (manual) showToast("🔑 Bitte zuerst das Team-Passwort eingeben."); renderSyncStatus(); return; }
+      if (!syncCryptoAvailable()) { if (manual) showToast("⚠️ " + syncErrorText(new Error("krypto"))); return; }
+      syncBusy = true;
+      if (manual) setSyncStatusText("⏳ Prüfe Team-Stand …", false);
+      try {
+        const file = await fetchJsonNoCache(SYNC_CONFIG.dataUrl);
+        const known = passwordOverride ? -1 : (meta.version || 0);
+        if (typeof file.version !== "number") throw new Error("format");
+        if (file.version <= known) {
+          const m = getSyncMeta(); m.lastCheck = new Date().toISOString(); m.lastError = ""; setSyncMeta(m);
+          if (manual) showToast("✓ Daten sind aktuell (Version " + file.version + ")");
+        } else {
+          const payload = await decryptSyncFile(pw, file);
+          if (passwordOverride) { const m = getSyncMeta(); m.pw = passwordOverride; setSyncMeta(m); }
+          applySyncedClinics(payload);
+          showToast("📥 Klinikdaten aktualisiert (Stand " + payload.stand + ")");
+        }
+      } catch (e) {
+        const m = getSyncMeta(); m.lastError = syncErrorText(e); m.lastCheck = new Date().toISOString(); setSyncMeta(m);
+        if (manual || (e && e.message === "passwort")) showToast("⚠️ " + syncErrorText(e));
+        if (passwordOverride) { syncBusy = false; renderSyncStatus(); throw e; }
+      }
+      syncBusy = false;
+      renderSyncStatus();
+      updateSyncBadge();
+    }
+    async function saveSyncPassword() {
+      const pw = (document.getElementById("syncPasswordInput").value || "").trim();
+      if (pw.length < 6) { showToast("🔑 Passwort zu kurz."); return; }
+      try { await runSync(true, pw); } catch (e) { return; }
+      const m = getSyncMeta();
+      if (!m.pw) { m.pw = pw; setSyncMeta(m); }
+      document.getElementById("syncPasswordInput").value = "";
+      renderSyncStatus();
+    }
+    function clearSyncPassword() {
+      if (!confirm("Team-Passwort von diesem Gerät entfernen? Die aktuellen Daten bleiben erhalten.")) return;
+      const m = getSyncMeta(); delete m.pw; setSyncMeta(m);
+      renderSyncStatus(); updateSyncBadge();
+      showToast("Passwort entfernt");
+    }
+    function undoLastSync() {
+      let prev = null;
+      try { prev = JSON.parse(localStorage.getItem(SYNC_UNDO_KEY) || "null"); } catch (e) {}
+      if (!validClinicList(prev)) { showToast("Kein vorheriger Stand vorhanden."); return; }
+      if (!confirm("Daten auf den Stand vor der letzten Team-Aktualisierung zurücksetzen?")) return;
+      HOSPITALS_DATA = prev;
+      persistData();
+      try { localStorage.removeItem(SYNC_UNDO_KEY); } catch (e) {}
+      renderFilterPills(); renderEstimatorDropdowns(); renderHospitalCards();
+      renderSyncStatus();
+      showToast("↩️ Vorheriger Stand wiederhergestellt");
+    }
+    async function createSyncFile() {
+      const typed = (document.getElementById("syncPasswordInput").value || "").trim();
+      const pw = typed || getSyncMeta().pw;
+      if (!pw || pw.length < 6) { showToast("🔑 Bitte oben das Team-Passwort eingeben."); return; }
+      if (!syncCryptoAvailable()) { showToast("⚠️ " + syncErrorText(new Error("krypto"))); return; }
+      if (!validClinicList(HOSPITALS_DATA)) { showToast("⚠️ Klinikdaten unvollständig – Abbruch."); return; }
+      if (!confirm("Sync-Datei mit den Daten DIESES Geräts erstellen? Nach dem Hochladen erhalten alle Apps genau diesen Stand.")) return;
+      let remoteVersion = 0;
+      try { const f = await fetchJsonNoCache(SYNC_CONFIG.dataUrl); if (typeof f.version === "number") remoteVersion = f.version; } catch (e) {}
+      const version = Math.max(remoteVersion, getSyncMeta().version || 0) + 1;
+      const now = new Date();
+      const pad = function(n) { return (n < 10 ? "0" : "") + n; };
+      const stand = pad(now.getDate()) + "." + pad(now.getMonth() + 1) + "." + now.getFullYear() + " " + pad(now.getHours()) + ":" + pad(now.getMinutes());
+      const file = await encryptSyncFile(pw, HOSPITALS_DATA, version, stand);
+      const check = await decryptSyncFile(pw, file);
+      if (check.clinics.length !== HOSPITALS_DATA.length) { showToast("⚠️ Prüfung fehlgeschlagen – Abbruch."); return; }
+      triggerFileDownload("daten.enc.json", JSON.stringify(file, null, 1), "application/json");
+      const m = getSyncMeta(); m.version = version; m.stand = stand; if (!m.pw) m.pw = pw; setSyncMeta(m);
+      document.getElementById("customDataBadge").style.display = "none";
+      renderSyncStatus(); updateSyncBadge();
+      showToast("🔐 Sync-Datei Version " + version + " erstellt – jetzt bei GitHub hochladen");
+    }
+    function setSyncStatusText(t, isErr) {
+      const el = document.getElementById("syncStatusText");
+      if (!el) return;
+      el.textContent = t;
+      el.className = "sync-status" + (isErr ? " err" : "");
+    }
+    function renderSyncStatus() {
+      const m = getSyncMeta();
+      const parts = [];
+      parts.push(m.pw ? "🔑 Team-Passwort ist gespeichert." : "🔒 Kein Team-Passwort gespeichert – es gelten die eingebauten Standarddaten.");
+      if (m.version) parts.push("📦 Team-Stand: Version " + m.version + " vom " + m.stand + ".");
+      if (m.lastCheck) parts.push("🕒 Zuletzt geprüft: " + new Date(m.lastCheck).toLocaleString("de-DE") + ".");
+      if (m.lastError) parts.push("⚠️ " + m.lastError);
+      try {
+        if (window.AndroidBridge && window.AndroidBridge.getAppVersionName) parts.push("📱 App-Version " + window.AndroidBridge.getAppVersionName());
+      } catch (e) {}
+      setSyncStatusText(parts.join("\n"), !!m.lastError);
+      const el = document.getElementById("syncStatusText");
+      if (el) el.style.whiteSpace = "pre-line";
+      let hasUndo = false;
+      try { hasUndo = !!localStorage.getItem(SYNC_UNDO_KEY); } catch (e) {}
+      const u = document.getElementById("syncUndoBtn");
+      if (u) u.style.display = hasUndo ? "inline-flex" : "none";
+    }
+    function updateSyncBadge() {
+      const m = getSyncMeta();
+      const b = document.getElementById("syncBadge");
+      if (!b) return;
+      if (m.version) {
+        b.textContent = "🔄 Team-Stand v" + m.version + " (" + m.stand + ")" + (m.lastError ? " ⚠️" : "");
+        b.style.display = "inline-block";
+      } else {
+        b.style.display = "none";
+      }
+    }
+    // Rückmeldungen der Android-App während des Updates
+    window.__onUpdateStatus = function(state, msg) {
+      const t = document.getElementById("appUpdateText");
+      const btn = document.getElementById("appUpdateBtn");
+      if (t) t.textContent = (state === "error" ? "⚠️ " : state === "done" ? "✅ " : "⏳ ") + msg;
+      if (btn) {
+        const busy = (state === "downloading" || state === "installing");
+        btn.disabled = busy;
+        btn.style.opacity = busy ? "0.5" : "1";
+        btn.textContent = state === "error" ? "🔄 Erneut versuchen" : "⬇️ Jetzt aktualisieren";
+      }
+      if (state === "error") showToast("⚠️ " + msg);
+    };
+
+    function openSyncModal() { renderSyncStatus(); document.getElementById("syncModal").classList.add("open"); }
+    function closeSyncModal() { document.getElementById("syncModal").classList.remove("open"); }
+    function openExternal(url) {
+      if (typeof window.AndroidBridge !== "undefined" && window.AndroidBridge && window.AndroidBridge.openUrl) {
+        try { window.AndroidBridge.openUrl(url); return; } catch (e) {}
+      }
+      window.open(url, "_blank");
+    }
+    function checkAppUpdate() {
+      if (typeof window.AndroidBridge === "undefined" || !window.AndroidBridge || !window.AndroidBridge.getAppVersion) return;
+      let current = 0;
+      try { current = Number(window.AndroidBridge.getAppVersion()) || 0; } catch (e) { return; }
+      fetchJsonNoCache(SYNC_CONFIG.appUrl).then(function(info) {
+        if (!info || typeof info.versionCode !== "number" || info.versionCode <= current || !info.apkUrl) return;
+        const banner = document.getElementById("appUpdateBanner");
+        if (!banner) return;
+        const canInstall = !!window.AndroidBridge.installUpdate;
+        banner.innerHTML = "📲 <strong>Neue App-Version " + escapeHtml(String(info.versionName || info.versionCode)) + " verfügbar.</strong> " +
+          '<span id="appUpdateText">' + escapeHtml(String(info.hinweis || "")) + '</span>' +
+          '<button type="button" class="action-btn primary-action" style="padding:5px 10px; font-size:0.8rem;" id="appUpdateBtn">' +
+          (canInstall ? "⬇️ Jetzt aktualisieren" : "⬇️ Laden") + '</button>';
+        banner.style.display = "block";
+        document.getElementById("appUpdateBtn").onclick = function() {
+          if (canInstall) {
+            try { window.AndroidBridge.installUpdate(info.apkUrl, info.versionCode); return; } catch (e) {}
+          }
+          openExternal(info.apkUrl);
+        };
+      }).catch(function() {});
+    }
+
+    function initApp() {
+      loadInitialData();
+      renderFilterPills();
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+      updateSyncBadge();
+      runSync(false);
+      checkAppUpdate();
+      registerWebAppCache();
+    }
+
+    function renderEstimatorDropdowns() {
+      const startSel = document.getElementById("startPointSelect");
+      const destSel = document.getElementById("destClinicSelect");
+      const currentDest = destSel.value || (HOSPITALS_DATA[0] ? HOSPITALS_DATA[0].id : "");
+
+      let startHtml = "";
+      if (customGpsCoords) {
+        startHtml += `<option value="gps" ${selectedStartId === "gps" ? "selected" : ""}>📍 Mein GPS-Standort (${customGpsCoords.lat.toFixed(4)}, ${customGpsCoords.lng.toFixed(4)})</option>`;
+      }
+      startHtml += '<optgroup label="Einsatzorte & Rettungswachen (HD / RNK)">';
+      STARTING_POINTS.forEach(pt => {
+        startHtml += `<option value="${pt.id}" ${selectedStartId === pt.id ? "selected" : ""}>${escapeHtml(pt.label)} (${escapeHtml(pt.area)})</option>`;
+      });
+      startHtml += '</optgroup><optgroup label="Kliniken (Sekundärverlegung)">';
+      HOSPITALS_DATA.forEach(c => {
+        const val = "clinic:" + c.id;
+        startHtml += `<option value="${val}" ${selectedStartId === val ? "selected" : ""}>🏥 ${escapeHtml(c.shortLabel || c.name)}</option>`;
+      });
+      startHtml += '</optgroup>';
+      startSel.innerHTML = startHtml;
+
+      const startCoords = getCurrentStartCoords();
+      destSel.innerHTML = HOSPITALS_DATA.map(c => {
+        const est = getTravelForClinic(c);
+        return `<option value="${c.id}" ${c.id === currentDest ? "selected" : ""}>${escapeHtml(c.name)} (${isRouted(est) ? "~" : "≈"} ${est.sosiMinutes} Min. SoSi${isRouted(est) ? "" : ", geschätzt"})</option>`;
+      }).join("");
+
+      renderEstimatorResult();
+    }
+
+    function handleStartPointChange() {
+      selectedStartId = document.getElementById("startPointSelect").value;
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+    }
+
+    function applyGpsPosition(lat, lng) {
+      if (typeof lat !== "number" || typeof lng !== "number" || isNaN(lat) || isNaN(lng)) return;
+      customGpsCoords = { lat: lat, lng: lng };
+      selectedStartId = "gps";
+      fetchGpsRoutes(lat, lng);
+      const helpBox = document.getElementById("gpsErrorHelpBox");
+      if (helpBox) helpBox.style.display = "none";
+      const btn = document.getElementById("locateGpsBtn");
+      if (btn) btn.textContent = "📍 GPS";
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+      showToast("📍 GPS-Standort erfolgreich übernommen!");
+    }
+
+    function resetGpsButton() {
+      const btn = document.getElementById("locateGpsBtn");
+      if (btn) btn.textContent = "📍 GPS";
+    }
+
+    function showGpsHelp(html) {
+      const helpBox = document.getElementById("gpsErrorHelpBox");
+      const txt = document.getElementById("gpsErrorHelpText");
+      if (txt && html) txt.innerHTML = html;
+      if (helpBox) helpBox.style.display = "block";
+    }
+
+    // Wird von der Android-App aufgerufen (Live-Standort)
+    window.__onNativeGps = function(lat, lng) {
+      applyGpsPosition(lat, lng);
+    };
+
+    window.__onNativeGpsError = function(code) {
+      resetGpsButton();
+      if (code === "permission") {
+        showGpsHelp("<strong>📍 Standort-Freigabe fehlt:</strong> Bitte tippe auf „⚙️ Standort-Freigabe öffnen“ und erlaube den Standort für diese App.");
+      } else if (code === "disabled") {
+        showGpsHelp("<strong>📍 Standortdienst ist ausgeschaltet:</strong> Bitte schalte Standort/GPS am Handy ein und tippe auf „🔄 Erneut versuchen“.");
+      } else {
+        showGpsHelp("<strong>📍 Kein Standort empfangen:</strong> Bitte gehe ins Freie bzw. prüfe den Empfang und tippe auf „🔄 Erneut versuchen“.");
+      }
+      showToast("⚠️ Standort konnte nicht ermittelt werden.");
+    };
+
+    function openLocationSettings() {
+      if (hasNative()) {
+        try { window.AndroidBridge.openLocationSettings(); return; } catch (e) {}
+      }
+      showToast("Bitte Standortzugriff in den Browser-/Handy-Einstellungen erlauben.");
+    }
+
+    function locateUserGps() {
+      const helpBox = document.getElementById("gpsErrorHelpBox");
+      if (helpBox) helpBox.style.display = "none";
+      const btn = document.getElementById("locateGpsBtn");
+      if (btn) btn.textContent = "⏳ Ortung...";
+
+      // In der Android-App: aktuellen Standort live über die App holen
+      if (hasNative()) {
+        try {
+          window.AndroidBridge.requestLocation();
+          setTimeout(function() {
+            const b = document.getElementById("locateGpsBtn");
+            if (b && b.textContent.indexOf("Ortung") !== -1) {
+              window.__onNativeGpsError("nofix");
+            }
+          }, 30000);
+          return;
+        } catch (e) {}
+      }
+
+      if (!navigator.geolocation) {
+        resetGpsButton();
+        showGpsHelp("<strong>📍 GPS nicht verfügbar:</strong> Dieser Browser unterstützt keine Standortabfrage. Bitte wähle den Startpunkt aus der Liste.");
+        showToast("⚠️ GPS wird in diesem Modus nicht unterstützt.");
+        return;
+      }
+
+      // Browser: frischer Live-Standort (kein zwischengespeicherter Wert)
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          applyGpsPosition(pos.coords.latitude, pos.coords.longitude);
+        },
+        function() {
+          navigator.geolocation.getCurrentPosition(
+            function(pos2) {
+              applyGpsPosition(pos2.coords.latitude, pos2.coords.longitude);
+            },
+            function(err2) {
+              resetGpsButton();
+              showGpsHelp(err2 && err2.code === 1
+                ? "<strong>📍 Standort-Freigabe blockiert:</strong> Bitte erlaube den Standortzugriff in den Browser-/Handy-Einstellungen und tippe auf „🔄 Erneut versuchen“."
+                : "<strong>📍 Kein GPS-Signal:</strong> Bitte prüfe, ob Standort/GPS eingeschaltet ist, oder tippe auf „🔄 Erneut versuchen“.");
+              showToast("⚠️ Standort noch nicht freigegeben – siehe Hinweisbox.");
+            },
+            { enableHighAccuracy: false, timeout: 12000, maximumAge: 30000 }
+          );
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+      );
+    }
+
+    function renderEstimatorResult() {
+      const destId = document.getElementById("destClinicSelect").value;
+      const clinic = HOSPITALS_DATA.find(c => c.id === destId) || HOSPITALS_DATA[0];
+      if (!clinic) return;
+      const est = getTravelForClinic(clinic);
+      const routed = isRouted(est);
+
+      document.getElementById("estimatorResultContainer").innerHTML = `
+        <div class="estimator-results">
+          <div class="est-box sosi">
+            <div style="font-size:0.72rem; text-transform:uppercase; font-weight:700;">🚨 Mit Sonderrechten (SoSi)</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#fff;">${routed ? "ca." : "≈"} ${est.sosiMinutes} Min.</div>
+          </div>
+          <div class="est-box normal">
+            <div style="font-size:0.72rem; text-transform:uppercase; font-weight:700;">🚗 Normalfahrt</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#fff;">${routed ? "ca." : "≈"} ${est.normalMinutes} Min.</div>
+          </div>
+          <div class="est-box dist" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <div>
+              <div style="font-size:0.72rem; text-transform:uppercase; font-weight:700; color:#94a3b8;">${routed ? "📏 Strecke (Straße)" : "📏 Geschätzte Strecke"}</div>
+              <div style="font-size:1rem; font-weight:700; color:#fff;">${routed ? "" : "≈ "}${est.roadDistanceKm} km <span style="font-size:0.75rem; color:#94a3b8;">(${est.airDistanceKm} km Luft)</span></div>
+            </div>
+            <div style="display:flex; gap:5px;">
+              <button type="button" class="tool-btn" onclick="jumpToHospital('${escapeHtml(clinic.id)}', event)">Karte</button>
+              <button type="button" class="tool-btn edit-btn" onclick="openRouteDirect('${escapeHtml(clinic.standort)}', '${escapeHtml(clinic.name)}')">📍 Route</button>
+            </div>
+          </div>
+          <div class="travel-source${routed ? "" : " est"}">${escapeHtml(travelSourceText(est))}</div>
+        </div>
+      `;
+    }
+
+    function toggleSortByTravelTime() {
+      sortByTravelTime = !sortByTravelTime;
+      const btn = document.getElementById("sortTravelBtn");
+      if (sortByTravelTime) {
+        btn.classList.add("active-sort");
+        btn.textContent = "✓ Sortiert nach kürzester Fahrzeit";
+      } else {
+        btn.classList.remove("active-sort");
+        btn.textContent = "↕ Nach Fahrzeit sortieren";
+      }
+      renderHospitalCards();
+    }
+
+    function renderFilterPills() {
+      const gbaContainer = document.getElementById("gbaPillsContainer");
+      const allLabel = `Alle Standorte (${HOSPITALS_DATA.length})`;
+      const gbaButtons = [
+        `<button type="button" class="filter-pill ${activeGbaFilter === 'ALL' ? 'active' : ''}" onclick="setGbaFilter('ALL')">${allLabel}</button>`
+      ];
+      GBA_CATEGORIES.forEach(cat => {
+        const isActive = activeGbaFilter === cat;
+        gbaButtons.push(`<button type="button" class="filter-pill ${isActive ? 'active' : ''}" onclick="setGbaFilter('${cat}')">${cat}</button>`);
+      });
+      gbaContainer.innerHTML = gbaButtons.join("");
+
+      const scenarioContainer = document.getElementById("scenarioPillsContainer");
+      const allScenarios = ["Alle Szenarien", ...SCENARIO_LIST];
+      scenarioContainer.innerHTML = allScenarios.map(sc => {
+        const isActive = activeScenarioFilter === sc;
+        return `<button type="button" class="filter-pill ${isActive ? 'active' : ''}" onclick="setScenarioFilter('${sc}')">${sc}</button>`;
+      }).join("");
+    }
+
+    function setGbaFilter(filter) {
+      activeGbaFilter = filter;
+      renderFilterPills();
+      renderHospitalCards();
+    }
+
+    function setScenarioFilter(scenario) {
+      activeScenarioFilter = scenario;
+      renderFilterPills();
+      renderHospitalCards();
+    }
+
+    function handleSearchInput() {
+      const input = document.getElementById("searchInput");
+      rawSearchQuery = input.value;
+      document.getElementById("clearSearchBtn").style.display = rawSearchQuery ? "block" : "none";
+      renderHospitalCards();
+    }
+
+    function clearSearch() {
+      const input = document.getElementById("searchInput");
+      input.value = "";
+      rawSearchQuery = "";
+      document.getElementById("clearSearchBtn").style.display = "none";
+      renderHospitalCards();
+    }
+
+    function resetAllFilters() {
+      activeGbaFilter = "ALL";
+      activeScenarioFilter = "Alle Szenarien";
+      clearSearch();
+      renderFilterPills();
+      renderHospitalCards();
+    }
+
+    function toggleDetails(id, event) {
+      if (event) event.stopPropagation();
+      if (expandedClinicIds.has(id)) {
+        expandedClinicIds.delete(id);
+      } else {
+        expandedClinicIds.add(id);
+      }
+      renderHospitalCards();
+    }
+
+    function toggleAllDetails() {
+      allDetailsExpanded = !allDetailsExpanded;
+      if (allDetailsExpanded) {
+        HOSPITALS_DATA.forEach(h => expandedClinicIds.add(h.id));
+        document.getElementById("toggleAllDetailsBtn").textContent = "▲ Alle Details einklappen";
+      } else {
+        expandedClinicIds.clear();
+        document.getElementById("toggleAllDetailsBtn").textContent = "▼ Alle Details aufklappen";
+      }
+      renderHospitalCards();
+    }
+
+    function jumpToHospital(targetId, event) {
+      if (event) event.stopPropagation();
+      let cardEl = document.getElementById("card-" + targetId);
+      if (!cardEl) {
+        activeGbaFilter = "ALL";
+        activeScenarioFilter = "Alle Szenarien";
+        renderFilterPills();
+        renderHospitalCards();
+        cardEl = document.getElementById("card-" + targetId);
+      }
+      if (cardEl) {
+        expandedClinicIds.add(targetId);
+        renderHospitalCards();
+        cardEl = document.getElementById("card-" + targetId);
+        cardEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        cardEl.classList.add("pulse-highlight");
+        setTimeout(() => cardEl.classList.remove("pulse-highlight"), 2200);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderHospitalCards() {
+      const grid = document.getElementById("cardsGrid");
+      const searchTokens = normalizeStr(rawSearchQuery).split(/\s+/).filter(Boolean);
+      const startCoords = getCurrentStartCoords();
+
+      const filtered = HOSPITALS_DATA.map(h => {
+        const matchesGba = activeGbaFilter === "ALL" || h.kategorie_filter === activeGbaFilter;
+        const matchesScenario = activeScenarioFilter === "Alle Szenarien" || (h.szenarien || []).includes(activeScenarioFilter);
+
+        let matchesSearch = true;
+        let matchInDetails = false;
+
+        let score = 0;
+        if (searchTokens.length > 0) {
+          const primaryStr = [
+            h.name || "", h.shortLabel || "", h.standort || "", h.telefon || "",
+            h.uhrzeiten || "", h.notiz || "", h.gba_stufe || "", h.planungsebene || "",
+            (h.spezielle_ressourcen || []).join(" ")
+          ].join(" ");
+
+          const detailStr = [
+            (h.indikationen_rd || []).join(" "),
+            h.ausschluss_rd || "",
+            h.verknuepfung_pfad || ""
+          ].join(" ");
+
+          const allStr = primaryStr + " " + detailStr;
+          matchesSearch = searchTokens.every(tok => tokenMatchesTarget(tok, allStr));
+
+          if (matchesSearch) {
+            matchInDetails = searchTokens.some(tok => tokenMatchesTarget(tok, detailStr) && !tokenMatchesTarget(tok, primaryStr));
+            searchTokens.forEach(tok => {
+              if (tokenMatchesTarget(tok, h.name || "")) score += 100;
+              else if (tokenMatchesTarget(tok, h.shortLabel || "")) score += 80;
+              else if (tokenMatchesTarget(tok, h.standort || "")) score += 50;
+              else if (tokenMatchesTarget(tok, (h.spezielle_ressourcen || []).join(" "))) score += 30;
+              else if (tokenMatchesTarget(tok, (h.indikationen_rd || []).join(" "))) score += 20;
+              else if (tokenMatchesTarget(tok, h.uhrzeiten || "")) score += 15;
+              else score += 5;
+            });
+          }
+        }
+
+        const travelEstimate = getTravelForClinic(h);
+
+        return { clinic: h, isVisible: matchesGba && matchesScenario && matchesSearch, matchInDetails, score, travelEstimate };
+      }).filter(item => item.isVisible)
+        .sort((a, b) => {
+          if (sortByTravelTime) return a.travelEstimate.sosiMinutes - b.travelEstimate.sosiMinutes;
+          if (searchTokens.length > 0) return b.score - a.score;
+          return 0;
+        });
+
+      document.getElementById("statusCounter").textContent = `${filtered.length} von ${HOSPITALS_DATA.length} Standorten aktiv`;
+
+      const hasActiveFilters = activeGbaFilter !== "ALL" || activeScenarioFilter !== "Alle Szenarien" || rawSearchQuery !== "";
+      document.getElementById("resetFiltersBtn").style.display = hasActiveFilters ? "inline-block" : "none";
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; background: #14171c; border: 1px solid #262a34; border-radius: 14px; padding: 32px; text-align: center; color: #94a3b8;">
+            <p style="font-size: 1rem; margin-bottom: 12px;">Keine Klinik für diese Such- oder Filterkombination gefunden.</p>
+            <button type="button" class="action-btn primary-action" onclick="resetAllFilters()">Alle Standorte einblenden</button>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(({ clinic: h, matchInDetails, travelEstimate }) => {
+        const isExpanded = expandedClinicIds.has(h.id) || (matchInDetails && rawSearchQuery.trim().length > 0);
+        const cleanTel = (h.telefon || "").replace(/[^0-9+]/g, "");
+
+        const linkedButtons = (h.linked_ids || []).map(targetId => {
+          const targetObj = HOSPITALS_DATA.find(item => item.id === targetId);
+          if (!targetObj) return "";
+          return `<button type="button" class="jump-chip" onclick="jumpToHospital('${targetId}', event)">↗ ${escapeHtml(targetObj.shortLabel)}</button>`;
+        }).join("");
+
+        return `
+          <article id="card-${escapeHtml(h.id)}" class="clinic-card">
+            <div class="card-header-top">
+              <h2 class="clinic-title">${highlightSearch(h.name, rawSearchQuery)}</h2>
+              <div class="card-tools">
+                ${cleanTel ? `<a href="tel:${cleanTel}" class="tool-btn call-btn" title="Anrufen: ${escapeHtml(h.telefon)}" onclick="event.stopPropagation()">📞 Anruf</a>` : ""}
+                <button type="button" class="tool-btn" title="Navigation direkt öffnen (Android-optimiert)" onclick="openRouteDirect('${escapeHtml(h.standort)}', '${escapeHtml(h.name)}'); event.stopPropagation();">📍 Route</button>
+                <button type="button" class="tool-btn edit-btn" onclick="openEditorModal('${escapeHtml(h.id)}', false); event.stopPropagation();">✏️ Edit</button>
+              </div>
+            </div>
+
+            <div class="clinic-location">
+              <span>${highlightSearch(h.standort, rawSearchQuery)}</span>
+              <button type="button" class="copy-chip-btn" onclick="copyAddressDirect('${escapeHtml(h.standort)}', event)" title="Adresse kopieren">📋 Kopieren</button>
+              ${h.telefon ? `<span>• Tel: ${highlightSearch(h.telefon, rawSearchQuery)}</span>` : ""}
+              <span class="travel-badge${isRouted(travelEstimate) ? "" : " est"}" title="${escapeHtml(travelSourceText(travelEstimate))}">🚑 ${isRouted(travelEstimate) ? "~" : "≈"}${travelEstimate.sosiMinutes} Min. SoSi (${travelEstimate.normalMinutes} Min. • ${travelEstimate.roadDistanceKm} km${isRouted(travelEstimate) ? "" : " • geschätzt"})</span>
+            </div>
+
+            <!-- Uhrzeiten & Erreichbarkeit -->
+            <div class="hours-box">
+              <div class="hours-text"><strong>🕒 Zeiten:</strong> ${highlightSearch(h.uhrzeiten || "24/7 Notaufnahme", rawSearchQuery)}</div>
+              <button type="button" class="hours-edit-quick" onclick="openEditorModal('${escapeHtml(h.id)}', true); event.stopPropagation();">🕒 Ändern</button>
+            </div>
+
+            ${h.notiz ? `<div class="custom-note-box">⚠️ <strong>Tagesstatus:</strong> ${highlightSearch(h.notiz, rawSearchQuery)}</div>` : ""}
+
+            <div class="badge-stack">
+              <span class="badge-gba">${highlightSearch(h.gba_stufe, rawSearchQuery)}</span>
+              <span class="badge-plan">${highlightSearch(h.planungsebene, rawSearchQuery)}</span>
+            </div>
+
+            <div class="resources-row">
+              ${(h.spezielle_ressourcen || []).map(res => `<span class="resource-tag">${highlightSearch(res, rawSearchQuery)}</span>`).join("")}
+            </div>
+
+            <!-- DROPDOWN DETAIL ACCORDION (Indikation, Ausschluss, Taktisch) -->
+            <button type="button" class="detail-toggle-btn ${isExpanded ? 'open' : ''}" onclick="toggleDetails('${escapeHtml(h.id)}', event)">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span>📋</span>
+                <span>${isExpanded ? 'Details einklappen' : 'Details: Indikationen, Ausschluss & Taktik'}</span>
+                ${matchInDetails && !isExpanded ? '<span class="detail-match-indicator">🔍 Treffer im Detail</span>' : ''}
+              </div>
+              <span style="font-size:0.75rem; color:#94a3b8;">${isExpanded ? '▲ Weniger' : '▼ Aufklappen'}</span>
+            </button>
+
+            <div class="detail-content-panel ${isExpanded ? 'open' : ''}">
+              <div class="section-heading">🟢 INDIKATIONEN (RETTUNGSDIENST)</div>
+              <div class="box-indikationen">
+                <ul>
+                  ${(h.indikationen_rd || []).map(ind => `<li>${highlightSearch(ind, rawSearchQuery)}</li>`).join("")}
+                </ul>
+              </div>
+
+              <div class="section-heading">🔴 AUSSCHLUSSKRITERIEN</div>
+              <div class="box-ausschluss">${highlightSearch(h.ausschluss_rd, rawSearchQuery)}</div>
+
+              <div class="section-heading">🔵 TAKTISCHE VERKNÜPFUNG / ESKALATIONSPFAD</div>
+              <div class="box-verknuepfung">
+                <div>${highlightSearch(h.verknuepfung_pfad, rawSearchQuery)}</div>
+                ${linkedButtons ? `
+                  <div class="jump-links-row">
+                    <span class="jump-label">Direkt-Sprung:</span>
+                    ${linkedButtons}
+                  </div>
+                ` : ""}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    /* IN-APP EDITOR LOGIK */
+    function openEditorModal(clinicId, focusHoursOnly) {
+      const modal = document.getElementById("editorModal");
+      const titleEl = document.getElementById("editorModalTitle");
+      const deleteBtn = document.getElementById("deleteClinicBtn");
+
+      const clinic = clinicId ? HOSPITALS_DATA.find(c => c.id === clinicId) : null;
+
+      if (clinic) {
+        titleEl.textContent = `✏️ Bearbeiten: ${clinic.shortLabel || clinic.name}`;
+        deleteBtn.style.display = "inline-flex";
+        document.getElementById("edit_id").value = clinic.id;
+        document.getElementById("edit_name").value = clinic.name || "";
+        document.getElementById("edit_shortLabel").value = clinic.shortLabel || "";
+        document.getElementById("edit_standort").value = clinic.standort || "";
+        document.getElementById("edit_telefon").value = clinic.telefon || "";
+        document.getElementById("edit_uhrzeiten").value = clinic.uhrzeiten || "";
+        document.getElementById("edit_notiz").value = clinic.notiz || "";
+        document.getElementById("edit_gba_stufe").value = clinic.gba_stufe || "";
+        document.getElementById("edit_planungsebene").value = clinic.planungsebene || "";
+        document.getElementById("edit_kategorie_filter").value = clinic.kategorie_filter || "Stufe 1 (Basis)";
+        document.getElementById("edit_ressourcen").value = (clinic.spezielle_ressourcen || []).join("\n");
+        document.getElementById("edit_indikationen").value = (clinic.indikationen_rd || []).join("\n");
+        document.getElementById("edit_ausschluss").value = clinic.ausschluss_rd || "";
+        document.getElementById("edit_verknuepfung").value = clinic.verknuepfung_pfad || "";
+      } else {
+        titleEl.textContent = "➕ Neue Zielklinik hinzufügen";
+        deleteBtn.style.display = "none";
+        document.getElementById("edit_id").value = "";
+        document.getElementById("edit_name").value = "";
+        document.getElementById("edit_shortLabel").value = "";
+        document.getElementById("edit_standort").value = "";
+        document.getElementById("edit_telefon").value = "";
+        document.getElementById("edit_uhrzeiten").value = "ZNA: 24/7";
+        document.getElementById("edit_notiz").value = "";
+        document.getElementById("edit_gba_stufe").value = "Stufe 1 (Basisnotfallversorgung)";
+        document.getElementById("edit_planungsebene").value = "Planungsebene 1 (Grund- & Regelversorgung)";
+        document.getElementById("edit_kategorie_filter").value = "Stufe 1 (Basis)";
+        document.getElementById("edit_ressourcen").value = "";
+        document.getElementById("edit_indikationen").value = "";
+        document.getElementById("edit_ausschluss").value = "";
+        document.getElementById("edit_verknuepfung").value = "";
+      }
+
+      const activeScenarios = clinic ? (clinic.szenarien || []) : [];
+      document.getElementById("edit_szenarien_container").innerHTML = SCENARIO_LIST.map(sc => {
+        const checked = activeScenarios.includes(sc) ? "checked" : "";
+        return `
+          <label class="checkbox-pill">
+            <input type="checkbox" name="edit_szenario_cb" value="${escapeHtml(sc)}" ${checked} />
+            <span>${escapeHtml(sc)}</span>
+          </label>
+        `;
+      }).join("");
+
+      modal.classList.add("open");
+
+      if (focusHoursOnly) {
+        setTimeout(() => {
+          const hoursInput = document.getElementById("edit_uhrzeiten");
+          hoursInput.focus();
+          hoursInput.select();
+        }, 100);
+      }
+    }
+
+    function closeEditorModal() {
+      document.getElementById("editorModal").classList.remove("open");
+    }
+
+    function saveClinicFromForm(event) {
+      event.preventDefault();
+      const existingId = document.getElementById("edit_id").value.trim();
+      const isNew = !existingId;
+      const id = existingId || ("custom-" + Date.now());
+
+      const selectedScenarios = Array.from(document.querySelectorAll('input[name="edit_szenario_cb"]:checked')).map(cb => cb.value);
+      const ressourcenLines = document.getElementById("edit_ressourcen").value.split("\n").map(s => s.trim()).filter(Boolean);
+      const indikationenLines = document.getElementById("edit_indikationen").value.split("\n").map(s => s.trim()).filter(Boolean);
+
+      const existingObj = HOSPITALS_DATA.find(c => c.id === id);
+
+      const updatedClinic = {
+        id: id,
+        name: document.getElementById("edit_name").value.trim(),
+        shortLabel: document.getElementById("edit_shortLabel").value.trim(),
+        standort: document.getElementById("edit_standort").value.trim(),
+        telefon: document.getElementById("edit_telefon").value.trim(),
+        uhrzeiten: document.getElementById("edit_uhrzeiten").value.trim() || "24/7",
+        notiz: document.getElementById("edit_notiz").value.trim(),
+        gba_stufe: document.getElementById("edit_gba_stufe").value.trim(),
+        planungsebene: document.getElementById("edit_planungsebene").value.trim(),
+        kategorie_filter: document.getElementById("edit_kategorie_filter").value,
+        szenarien: selectedScenarios,
+        spezielle_ressourcen: ressourcenLines,
+        indikationen_rd: indikationenLines,
+        ausschluss_rd: document.getElementById("edit_ausschluss").value.trim(),
+        verknuepfung_pfad: document.getElementById("edit_verknuepfung").value.trim(),
+        linked_ids: existingObj ? (existingObj.linked_ids || []) : []
+      };
+
+      if (isNew) {
+        HOSPITALS_DATA.unshift(updatedClinic);
+      } else {
+        const idx = HOSPITALS_DATA.findIndex(c => c.id === id);
+        if (idx !== -1) HOSPITALS_DATA[idx] = updatedClinic;
+      }
+
+      persistData();
+      closeEditorModal();
+      renderFilterPills();
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+      showToast("✓ Klinik & Uhrzeiten gespeichert!");
+    }
+
+    function deleteCurrentClinic() {
+      const id = document.getElementById("edit_id").value;
+      if (!id) return;
+      if (!confirm("Möchtest du diese Klinik wirklich aus der Liste entfernen?")) return;
+      HOSPITALS_DATA = HOSPITALS_DATA.filter(c => c.id !== id);
+      persistData();
+      closeEditorModal();
+      renderFilterPills();
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+      showToast("🗑️ Klinik entfernt");
+    }
+
+    function openBackupModal() { document.getElementById("backupModal").classList.add("open"); }
+    function closeBackupModal() { document.getElementById("backupModal").classList.remove("open"); }
+    function openIosModal() {
+      const el = document.getElementById("iosWebUrl");
+      if (el) el.textContent = SYNC_CONFIG.webUrl;
+      document.getElementById("iosModal").classList.add("open");
+    }
+    function copyWebUrl() {
+      const url = SYNC_CONFIG.webUrl;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() { showToast("📋 Adresse kopiert"); }, function() { showToast(url); });
+      } else {
+        showToast(url);
+      }
+    }
+    function registerWebAppCache() {
+      if (!("serviceWorker" in navigator)) return;
+      if (location.protocol !== "https:" && location.hostname !== "localhost") return;
+      if (location.hostname === "appassets.androidplatform.net") return;
+      let reloading = false;
+      const hadController = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener("controllerchange", function() {
+        if (!hadController || reloading) return;
+        const banner = document.getElementById("appUpdateBanner");
+        if (!banner) return;
+        banner.innerHTML = "🔄 <strong>Neue Version geladen.</strong> " +
+          '<button type="button" class="action-btn primary-action" style="padding:5px 10px; font-size:0.8rem;" id="webReloadBtn">Jetzt neu laden</button>';
+        banner.style.display = "block";
+        document.getElementById("webReloadBtn").onclick = function() { reloading = true; location.reload(); };
+      });
+      navigator.serviceWorker.register("sw.js").catch(function() {});
+    }
+    function closeIosModal() { document.getElementById("iosModal").classList.remove("open"); }
+
+    function triggerFileDownload(filename, content, mimeType) {
+      if (typeof window.AndroidBridge !== "undefined" && window.AndroidBridge && window.AndroidBridge.saveFile) {
+        try { window.AndroidBridge.saveFile(filename, content, mimeType); return; } catch (e) {}
+      }
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }
+
+    function downloadStandaloneHTML() {
+      closeEditorModal();
+      closeBackupModal();
+      document.getElementById("baked-clinics-data").textContent = "\n" + JSON.stringify(HOSPITALS_DATA, null, 2) + "\n  ";
+      const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      triggerFileDownload("Zielklinik_App_HD_Android.html", fullHtml, "text/html;charset=utf-8");
+      showToast("💾 App (.html) inkl. Änderungen gespeichert!");
+    }
+
+    function exportJsonData() {
+      const jsonStr = JSON.stringify(HOSPITALS_DATA, null, 2);
+      triggerFileDownload("Zielkliniken_HD_RNK_Backup.json", jsonStr, "application/json;charset=utf-8");
+      showToast("📤 JSON-Backup exportiert!");
+    }
+
+    function importJsonData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            HOSPITALS_DATA = parsed;
+            persistData();
+            renderFilterPills();
+            renderEstimatorDropdowns();
+            renderHospitalCards();
+            closeBackupModal();
+            showToast("📥 Backup erfolgreich geladen!");
+          } else {
+            alert("Ungültige JSON-Datei.");
+          }
+        } catch (err) {
+          alert("Fehler beim Lesen der Backup-Datei.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetToFactoryDefaults() {
+      if (!confirm("Alle eigenen Änderungen an Uhrzeiten und Kliniken zurücksetzen?")) return;
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      document.getElementById("customDataBadge").style.display = "none";
+      const bakedJson = document.getElementById("baked-clinics-data").textContent;
+      HOSPITALS_DATA = JSON.parse(bakedJson);
+      closeBackupModal();
+      renderFilterPills();
+      renderEstimatorDropdowns();
+      renderHospitalCards();
+      showToast("🔄 Werkseinstellungen geladen");
+    }
+
+    function toggleHeaderDropdown(event) {
+      if (event) event.stopPropagation();
+      document.getElementById("headerDropdownMenu").classList.toggle("open");
+    }
+
+    function closeHeaderDropdown() {
+      const m = document.getElementById("headerDropdownMenu");
+      if (m) m.classList.remove("open");
+    }
+
+    document.addEventListener("click", function(e) {
+      const wrap = document.getElementById("headerDropdownWrap");
+      if (wrap && !wrap.contains(e.target)) {
+        closeHeaderDropdown();
+      }
+    });
+
+    function toggleTheme() {
+      const isLight = document.documentElement.classList.toggle("theme-light");
+      try { localStorage.setItem("rd_hd_rnk_theme_v1", isLight ? "light" : "dark"); } catch (e) {}
+      const lbl = document.getElementById("themeToggleLabel");
+      if (lbl) lbl.textContent = isLight ? "Nacht-Modus (Dunkel)" : "Tag-Modus (Hell / Kontrast)";
+      showToast(isLight ? "☀️ Tag-Modus (Hell) aktiviert" : "🌙 Nacht-Modus (Dunkel) aktiviert");
+    }
+
+    try {
+      if (localStorage.getItem("rd_hd_rnk_theme_v1") === "light") {
+        document.documentElement.classList.add("theme-light");
+      }
+    } catch (e) {}
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>
